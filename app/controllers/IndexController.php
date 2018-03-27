@@ -8,5 +8,9 @@ class IndexController extends ControllerBase
 
     }
 
+    public function testAction(){
+        echo 'hello';
+    }
+
 }
 

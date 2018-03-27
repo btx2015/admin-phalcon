@@ -11,8 +11,8 @@ return new \Phalcon\Config([
         'adapter'     => 'Mysql',
         'host'        => 'localhost',
         'username'    => 'root',
-        'password'    => '',
-        'dbname'      => 'test',
+        'password'    => 'root',
+        'dbname'      => 'btx_admin',
         'charset'     => 'utf8',
     ],
     'application' => [
@@ -29,5 +29,25 @@ return new \Phalcon\Config([
         // of the webpspace.  This will break if the public/index.php entry point is moved or
         // possibly if the web server rewrite rules are changed. This can also be set to a static path.
         'baseUri'        => preg_replace('/public([\/\\\\])index.php$/', '', $_SERVER["PHP_SELF"]),
+    ],
+    'access' => [
+        'default' => [
+            'require_login'     => 1,       // need login
+            'require_header'    => 0,       // http header
+            'method'            => 'POST',  // request method
+            'proxy_time_out'    => 10       // max request time
+        ],
+        '/user/login' => [
+            'require_login'     => 0,
+            'method'            => 'POST',
+        ],
+        '/user/picture_captcha' => [
+            'require_login'     => 0,
+            'method'            => 'GET',
+        ],
+        '/index/test' => [
+            'require_login'     => 0,
+            'method'            => 'GET',
+        ],
     ]
 ]);
