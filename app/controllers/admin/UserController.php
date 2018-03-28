@@ -8,8 +8,6 @@
 
 namespace admin;
 
-use Phalcon\Validation\Validator\PresenceOf;
-
 class UserController extends \ControllerBase
 {
     protected function onConstruct()
@@ -35,6 +33,15 @@ class UserController extends \ControllerBase
     }
 
     public function listAction(){
-
+        $conditions = $this->valid->validate([
+            "username"  => [[]],
+            "phone"     => [[]],
+            "state"     => [['InclusionIn'],['InclusionIn'=>['domain'=>[1,2,3]]]],
+            "page"      => [['Numericality']],
+            "limit"     => [['Numericality']]
+        ]);
+        if(!$conditions) exit($conditions);
+        $model = new \AdminUsers();
+        $data = $model->getUserRecords($conditions);
     }
 }

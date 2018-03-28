@@ -2,12 +2,6 @@
 
 use Phalcon\Mvc\Controller;
 use Phalcon\Http\Request;
-use Phalcon\Validation;
-use Phalcon\Validation\Validator\PresenceOf;
-use Phalcon\Validation\Validator\InclusionIn;
-use Phalcon\Validation\Validator\ExclusionIn;
-use Phalcon\Validation\Validator\Email;
-use Phalcon\Validation\Validator\Callback;
 
 class ControllerBase extends Controller
 {
@@ -26,7 +20,7 @@ class ControllerBase extends Controller
     }
 
     protected function initParams(){
-        $this->uri = $this->request->getURI();
+        $this->uri = $this->request->get('_url');
         $access = $this->config->access->toArray();
         $accessDefault = $access['default'];
         $accessUri = $access[$this->uri] ?? [];
@@ -56,13 +50,4 @@ class ControllerBase extends Controller
         return true;
     }
 
-    protected function validate($params = []){
-        if(!is_array($params) || empty($params))
-            return false;
-        foreach($params as $k => $v){
-
-        }
-        $valid = new Validation();
-        return true;
-    }
 }
