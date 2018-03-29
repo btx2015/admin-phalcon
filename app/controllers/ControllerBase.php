@@ -50,4 +50,18 @@ class ControllerBase extends Controller
         return true;
     }
 
+    protected function returnResult($result = ['code'=>0]){
+        if($result['code']){
+            if(!isset($result['msg']) || !$result['msg']){
+                $config = new \Phalcon\Config\Adapter\Php("../app/config/errMsg.php");
+                if($config && isset($config->toArray()[$result['code']]))
+                    $msg = $config->toArray()[$result['code']];
+            }
+        }else{
+            if(!isset($result['msg']) || !$result['msg'])
+                $msg = 'success';
+        }
+        $result['msg']  = $msg;
+        echo json_encode($result);
+    }
 }

@@ -32,7 +32,7 @@ return new \Phalcon\Config([
     ],
     'access' => [
         'default' => [
-            'require_login'     => 1,       // need login
+            'require_login'     => 0,       // need login
             'require_header'    => 0,       // http header
             'method'            => 'POST',  // request method
             'proxy_time_out'    => 10       // max request time

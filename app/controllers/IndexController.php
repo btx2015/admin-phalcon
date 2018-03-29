@@ -9,16 +9,7 @@ class IndexController extends ControllerBase
     }
 
     public function testAction(){
-        $valid = new Validators();
-        $result = $valid->validateParams([
-            "username"  => [[]],
-            "phone"     => [[]],
-            "state"     => [['InclusionIn'],['InclusionIn'=>['domain'=>[1,2]]]],
-            "page"      => [['Numericality']],
-            "limit"     => [['Numericality']]
-        ],$this->params);
-        if($result !== true) echo $result;
-        die('end');
+        $this->returnResult(['code'=>0,'data'=>123]);
     }
 
 }

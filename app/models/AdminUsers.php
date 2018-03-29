@@ -183,4 +183,24 @@ class AdminUsers extends BaseModel
         return parent::findFirst($parameters);
     }
 
+    public function createUserRecords($create = []){
+        if(empty($create))
+            return ['code'=>20000];//Empty array
+        if($this->findFirst([
+            'conditions' => 'username = ?1 OR phone = ?2',
+            'bind' => [
+                1 => $create['username'],
+                2 => $create['phone']
+            ],
+            'columns' => 'id'
+        ]))
+            return ['code'=>20001];//The username is already exists
+        if($this->create($create) !== true)
+            return ['code'=>20000];//Create fail
+        return ['code'=>0];
+    }
+
+    public function getUserRecords($conditions = []){
+
+    }
 }

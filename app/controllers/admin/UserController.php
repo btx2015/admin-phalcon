@@ -32,8 +32,32 @@ class UserController extends \ControllerBase
                 exit($this->validMessageToStr($check_result)); // 参数错误
     }
 
+    public function verifyAction(){
+        $valid = new \Validators();
+        $res = $valid->validateParams([
+            "username"  => [['PresenceOf']],
+            "phone"     => [['PresenceOf']],
+        ]);
+    }
+
+    public function addAction(){
+        $valid = new \Validators();
+        $create = $valid->validateParams([
+            "username"  => [['PresenceOf']],
+            "password"  => [['PresenceOf']],
+            "role_id"   => [['PresenceOf']],
+            "true_name" => [[]],
+            "phone"     => [['PresenceOf']],
+            "email"     => [['Email']],
+        ],$this->params);
+        if(!is_array($create)) exit($create);
+        $model = new \AdminUsers();
+        $this->returnResult($model->createUserRecords($create));
+    }
+
     public function listAction(){
-        $conditions = $this->valid->validate([
+        $valid = new \Validators();
+        $conditions = $valid->validateParams([
             "username"  => [[]],
             "phone"     => [[]],
             "state"     => [['InclusionIn'],['InclusionIn'=>['domain'=>[1,2,3]]]],
@@ -42,6 +66,7 @@ class UserController extends \ControllerBase
         ]);
         if(!$conditions) exit($conditions);
         $model = new \AdminUsers();
-        $data = $model->getUserRecords($conditions);
+        $data = $model->getUserRecords($this->params);
+        var_dump($data);die;
     }
 }
