@@ -125,22 +125,22 @@ class AdminUsers extends BaseModel
      *
      * @return boolean
      */
-    public function validation()
-    {
-        $validator = new Validation();
-
-        $validator->add(
-            'email',
-            new EmailValidator(
-                [
-                    'model'   => $this,
-                    'message' => 'Please enter a correct email address',
-                ]
-            )
-        );
-
-        return $this->validate($validator);
-    }
+//    public function validation()
+//    {
+//        $validator = new Validation();
+//
+//        $validator->add(
+//            'email',
+//            new EmailValidator(
+//                [
+//                    'model'   => $this,
+//                    'message' => 'Please enter a correct email address',
+//                ]
+//            )
+//        );
+//
+//        return $this->validate($validator);
+//    }
 
     /**
      * Initialize method for model.
@@ -152,37 +152,9 @@ class AdminUsers extends BaseModel
     }
 
     /**
-     * Returns table name mapped in the model.
-     *
-     * @return string
+     * @param array $create
+     * @return array
      */
-    public function getSource()
-    {
-        return 'admin_users';
-    }
-
-    /**
-     * Allows to query a set of records that match the specified conditions
-     *
-     * @param mixed $parameters
-     * @return AdminUsers[]|AdminUsers|\Phalcon\Mvc\Model\ResultSetInterface
-     */
-    public static function find($parameters = null)
-    {
-        return parent::find($parameters);
-    }
-
-    /**
-     * Allows to query the first record that match the specified conditions
-     *
-     * @param mixed $parameters
-     * @return AdminUsers|\Phalcon\Mvc\Model\ResultInterface
-     */
-    public static function findFirst($parameters = null)
-    {
-        return parent::findFirst($parameters);
-    }
-
     public function createUserRecords($create = []){
         if(empty($create))
             return ['code'=>20000];//Empty array
@@ -195,12 +167,14 @@ class AdminUsers extends BaseModel
             'columns' => 'id'
         ]))
             return ['code'=>20001];//The username is already exists
-        if($this->create($create) !== true)
+        if($this->create($create) !== true){
             return ['code'=>20000];//Create fail
+        }
         return ['code'=>0];
     }
 
-    public function getUserRecords($conditions = []){
 
+    public function getUserRecords($conditions = []){
+        return [];
     }
 }

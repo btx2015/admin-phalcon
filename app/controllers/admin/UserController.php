@@ -50,7 +50,8 @@ class UserController extends \ControllerBase
             "phone"     => [['PresenceOf']],
             "email"     => [['Email']],
         ],$this->params);
-        if(!is_array($create)) exit($create);
+        if(isset($create['code']))
+            $this->returnResult($create);
         $model = new \AdminUsers();
         $this->returnResult($model->createUserRecords($create));
     }
@@ -60,13 +61,13 @@ class UserController extends \ControllerBase
         $conditions = $valid->validateParams([
             "username"  => [[]],
             "phone"     => [[]],
-            "state"     => [['InclusionIn'],['InclusionIn'=>['domain'=>[1,2,3]]]],
+            "state"     => [['InclusionIn'],['InclusionIn'=>['domain'=>[1,2]]]],
             "page"      => [['Numericality']],
             "limit"     => [['Numericality']]
         ]);
-        if(!$conditions) exit($conditions);
+        if(isset($conditions['code']))
+            $this->returnResult($conditions);
         $model = new \AdminUsers();
-        $data = $model->getUserRecords($this->params);
-        var_dump($data);die;
+        $this->returnResult($model->getUserRecords($this->params));
     }
 }
