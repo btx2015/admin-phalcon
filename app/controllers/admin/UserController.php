@@ -32,23 +32,15 @@ class UserController extends \ControllerBase
                 exit($this->validMessageToStr($check_result)); // 参数错误
     }
 
-    public function verifyAction(){
-        $valid = new \Validators();
-        $res = $valid->validateParams([
-            "username"  => [['PresenceOf']],
-            "phone"     => [['PresenceOf']],
-        ]);
-    }
-
     public function addAction(){
         $valid = new \Validators();
         $create = $valid->validateParams([
-            "username"  => [['PresenceOf']],
-            "password"  => [['PresenceOf']],
-            "role_id"   => [['PresenceOf']],
-            "true_name" => [[]],
-            "phone"     => [['PresenceOf']],
-            "email"     => [['Email']],
+            "username"  => ['username',['PresenceOf']],
+            "password"  => ['password',['PresenceOf']],
+            "role_id"   => ['role_id',['PresenceOf']],
+            "true_name" => ['true_name',[]],
+            "phone"     => ['phone',['PresenceOf']],
+            "email"     => ['email',['Email']],
         ],$this->params);
         if(isset($create['code']))
             $this->returnResult($create);
@@ -59,11 +51,11 @@ class UserController extends \ControllerBase
     public function listAction(){
         $valid = new \Validators();
         $conditions = $valid->validateParams([
-            "username"  => [[]],
-            "phone"     => [[]],
-            "state"     => [['InclusionIn'],['InclusionIn'=>['domain'=>[1,2]]]],
-            "page"      => [['Numericality']],
-            "limit"     => [['Numericality']]
+            "username"  => ['username',[]],
+            "phone"     => ['phone',[]],
+            "state"     => ['state',['InclusionIn'],['InclusionIn'=>['domain'=>[1,2]]]],
+            "page"      => ['page',['Numericality']],
+            "limit"     => ['limit',['Numericality']]
         ]);
         if(isset($conditions['code']))
             $this->returnResult($conditions);

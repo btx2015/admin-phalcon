@@ -55,13 +55,12 @@ class ControllerBase extends Controller
             if(!isset($result['msg']) || !$result['msg']){
                 $config = new \Phalcon\Config\Adapter\Php("../app/config/errMsg.php");
                 if($config && isset($config->toArray()[$result['code']]))
-                    $msg = $config->toArray()[$result['code']];
+                    $result['msg'] = $config->toArray()[$result['code']];
             }
         }else{
             if(!isset($result['msg']) || !$result['msg'])
-                $msg = 'success';
+                $result['msg'] = 'success';
         }
-        $result['msg']  = $msg;
         echo json_encode($result);
     }
 }
