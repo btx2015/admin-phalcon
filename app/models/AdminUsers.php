@@ -155,7 +155,7 @@ class AdminUsers extends BaseModel
      * @param array $create
      * @return array
      */
-    public function createUserRecords($create = []){
+    public function createUserRecord($create = []){
         if(empty($create))
             return ['code'=>20000];//Empty array
         if($this->findFirst([
@@ -167,14 +167,45 @@ class AdminUsers extends BaseModel
             'columns' => 'id'
         ]))
             return ['code'=>20001];//The username is already exists
-        if($this->create($create) !== true){
+        if(!$this->create($create)){
             return ['code'=>20000];//Create fail
         }
         return ['code'=>0];
     }
 
-
+    /**
+     * @param array $conditions
+     * @return array
+     */
     public function getUserRecords($conditions = []){
-        return [];
+        list($data,$total) = $this->getRecords($conditions,
+            ['id','username','phone','email','state','truename','role_id','created_at']);
+        if(!$data){
+            $data = [];
+            $total = 0;
+        }
+        return [
+            'code' => 0,
+            'data' => $data,
+            'total' => $total,
+        ];
+    }
+
+
+    public function updateUserRecord($update = []){
+        $user = $this->findFirst([
+            'conditions' => 'id = ?1',
+            'bind' => [
+                1 => $update['id']
+            ]
+        ]);
+        if(!$user)
+            return ['code'=>20002];//User is not exists.
+
+        //@TODO 验证操作员是否有权限修改该账户信息
+
+        if($user->update($update) !== true)
+            return ['code'=>20003];//Failed
+        return ['code'=>0];
     }
 }

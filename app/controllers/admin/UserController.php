@@ -10,31 +10,19 @@ namespace admin;
 
 class UserController extends \ControllerBase
 {
+    private $model;
     protected function onConstruct()
     {
         parent::onConstruct();
+        $this->model = new \AdminUsers();
     }
 
     public function loginAction(){
-        $this->valid->add([
-            ["username","password","captcha"],
-            new PresenceOf([
-                "message" => [
-                    "username" => "The username is required!",
-                    "password" => "The password is required!",
-                    "captcha"  => "The captcha is required!",
-                ]
-            ])
-        ]);
-        $check_result = $this->valid->validate($this->params);
-        if (count($check_result))
-            foreach ($check_result as $m)
-                exit($this->validMessageToStr($check_result)); // 参数错误
+
     }
 
     public function addAction(){
-        $valid = new \Validators();
-        $create = $valid->validateParams([
+        $create = $this->valid->validateParams([
             "username"  => ['username',['PresenceOf']],
             "password"  => ['password',['PresenceOf']],
             "role_id"   => ['role_id',['PresenceOf']],
@@ -44,22 +32,34 @@ class UserController extends \ControllerBase
         ],$this->params);
         if(isset($create['code']))
             $this->returnResult($create);
-        $model = new \AdminUsers();
-        $this->returnResult($model->createUserRecords($create));
+        $this->returnResult($this->model->createUserRecord($create));
     }
 
     public function listAction(){
-        $valid = new \Validators();
-        $conditions = $valid->validateParams([
+        $conditions = $this->valid->validateParams([
             "username"  => ['username',[]],
             "phone"     => ['phone',[]],
             "state"     => ['state',['InclusionIn'],['InclusionIn'=>['domain'=>[1,2]]]],
-            "page"      => ['page',['Numericality']],
+            "page"      => ['page', ['Numericality']],
             "limit"     => ['limit',['Numericality']]
         ]);
         if(isset($conditions['code']))
             $this->returnResult($conditions);
-        $model = new \AdminUsers();
-        $this->returnResult($model->getUserRecords($this->params));
+        $this->returnResult($this->model->getUserRecords($conditions));
+    }
+
+    public function updateAction(){
+        $update = $this->valid->validateParams([
+            "id"        => ['id',['PresenceOf','Numericality']],
+            "username"  => ['username',[]],
+            "state"     => ['state',['InclusionIn'],['InclusionIn'=>['domain'=>[1,2]]]],
+            "role_id"   => ['role_id',[]],
+            "truename"  => ['truename',[]],
+            "phone"     => ['phone',[]],
+            "email"     => ['email',['Email']],
+        ],$this->params);
+        if(isset($update['code']))
+            $this->returnResult($update);
+        $this->returnResult($this->model->updateUserRecord($update));
     }
 }

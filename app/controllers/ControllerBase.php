@@ -11,12 +11,14 @@ class ControllerBase extends Controller
     protected $uri;
     protected $config;
     protected $accessConfig;
+    protected $valid;
 
     protected function onConstruct(){
         $this->config = require "../app/config/config.php";
         $this->request = new request();
         $this->initParams();
         $this->checkAuth();
+        $this->valid = new Validators();
     }
 
     protected function initParams(){
@@ -62,5 +64,6 @@ class ControllerBase extends Controller
                 $result['msg'] = 'success';
         }
         echo json_encode($result);
+        exit();
     }
 }

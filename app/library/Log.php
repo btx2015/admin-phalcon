@@ -14,7 +14,12 @@ class Log
 
     public static function writeLog($fileName = 'error',$message = '',$level = 1){
         try{
-            $logger = new FileAdapter(BASE_PATH."/log/".date('Ymd')."/".$fileName.".log");
+            $folder_path = BASE_PATH."/log/".date('Ymd');
+            if(!file_exists($folder_path)){
+                mkdir($folder_path, 0777, true);
+                chmod($folder_path, 0777);
+            }
+            $logger = new FileAdapter($folder_path."/".$fileName.".log");
             if($level){
                 $logger->log($message, Logger::DEBUG);
             }else{

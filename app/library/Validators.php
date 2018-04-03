@@ -24,7 +24,9 @@ class Validators extends Phalcon\Validation
                 $data[$v[0]] = $params[$k];
             }
             foreach ($v[1] as $a) {
-                if (isset($v[2]) && $v[2][$a]) {
+                if (isset($v[2])) {
+                    if(!isset($v[2][$a]) || !is_array($v[2][$a]) || empty($v[2][$a]))
+                        return ['code'=>10006,'msg'=>"The filters is invalid."];
                     $object = $this->$a($v[2][$a]);
                 } else {
                     $object = $this->$a();
@@ -37,7 +39,7 @@ class Validators extends Phalcon\Validation
         $checkResult = $this->validate($data);
         if(count($checkResult)){
             foreach($checkResult as $msg)
-                return ['code'=>10006,'msg'=>$msg];
+                return ['code'=>10006,'msg'=>$msg->getMessage()];
         }
         return $data;
     }
@@ -46,6 +48,6 @@ class Validators extends Phalcon\Validation
         $func_name = 'Phalcon\\Validation\\Validator\\'.$func_name;
         if(!class_exists($func_name))
             return false;
-        return new $func_name($args[1] ?? []);
+        return new $func_name($args[0] ?? []);
     }
 }
