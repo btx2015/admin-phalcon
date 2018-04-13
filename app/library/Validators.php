@@ -24,8 +24,8 @@ class Validators extends Phalcon\Validation
                 $data[$v[0]] = $params[$k];
             }
             foreach ($v[1] as $a) {
-                if (isset($v[2])) {
-                    if(!isset($v[2][$a]) || !is_array($v[2][$a]) || empty($v[2][$a]))
+                if (isset($v[2][$a])) {
+                    if(!is_array($v[2][$a]) || empty($v[2][$a]))
                         return ['code'=>10006,'msg'=>"The filters is invalid."];
                     $object = $this->$a($v[2][$a]);
                 } else {

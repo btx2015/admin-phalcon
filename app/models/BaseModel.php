@@ -11,6 +11,12 @@ class BaseModel extends \Phalcon\Mvc\Model
 
     protected $_message;
 
+    public $conn;
+
+    protected function onConstruct()
+    {
+        $this->conn = $this->getReadConnection();
+    }
 
     /**
      * Overriding create
@@ -174,7 +180,76 @@ class BaseModel extends \Phalcon\Mvc\Model
     }
 
 
-    public function saveRecords(){
+    public function saveRecords($insertInfos, $insertFields = array(), $on_update = false){
+        try {
 
+            if (! isset($insertInfos) || ! is_array($insertInfos) || ! $insertInfos) {
+                throw new Exception('empty insert info');
+            }
+
+            // 整理要插入的字段
+            if (! isset($insertFields) || ! is_array($insertFields) || ! $insertFields) {
+                $insertFields = array_keys($insertInfos[0]);
+                $insertFields[] = 'created_at';
+            }
+
+            $nowTime = time();
+            // 拼接SQL文字符串,编辑插入参数
+            $insertStr = '';
+            foreach ($insertInfos as $key => &$insertInfo) {
+                $insertInfo['created_at'] = $nowTime;
+
+                $insertField = '';
+                $insertValue = '';
+                foreach ($insertFields as $v) {
+                    if (array_key_exists($v, $insertInfo)) {
+                        $insertField = $insertField . "`$v`,";
+                        $insertValue = $insertValue . ":{$v}_{$key},";
+                        $insertParams["{$v}_{$key}"] = isset($insertInfo[$v]) ? $insertInfo[$v] : null;
+                    }
+                }
+                $insertValue = substr($insertValue, 0, - 1);
+                $insertStr = $insertStr . "({$insertValue}),";
+            }
+            $insertField = substr($insertField, 0, - 1);
+            $insertStr = substr($insertStr, 0, - 1);
+
+            // 是否重复的数据更新
+            if ($on_update) {
+                $duplicateStr = " ON DUPLICATE KEY UPDATE ";
+                foreach ($insertFields as $v) {
+                    if (array_key_exists($v, $insertInfo)) {
+                        $duplicateStr = $duplicateStr . "`$v`=VALUES(`$v`),";
+                    }
+                }
+                $duplicateStr = rtrim($duplicateStr, ',');
+            } else {
+                $duplicateStr = '';
+            }
+
+            // 编辑SQL文
+            $sql = "INSERT INTO `" . $this->getSchema() . "`.`{$this->getSource()}`
+					(	$insertField
+					)
+					VALUES
+					$insertStr
+					$duplicateStr";
+
+            $cmd = $this->conn->prepare($sql);
+            $cmd = $this->conn->executePrepared($cmd, $insertParams, []);
+
+            if ($cmd->errorCode() == '00000') {
+                $exeRtn = true;
+            } else {
+                Log::writeLog('db',json_encode($cmd->errorInfo()) . ";sql:$sql", 'ERROR');
+                $exeRtn = false;
+            }
+        } catch (Exception $e) {
+            Log::writeLog('db',$e->getMessage() . ';trace:' . $e->getTraceAsString() . ';sql:' . @$sql, 'ERROR');
+            $exeRtn = false;
+        }
+
+        $conn = null;
+        return $exeRtn;
     }
 }

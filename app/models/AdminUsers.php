@@ -159,14 +159,16 @@ class AdminUsers extends BaseModel
         if(empty($create))
             return ['code'=>20000];//Empty array
         if($this->findFirst([
-            'conditions' => 'username = ?1 OR phone = ?2',
+            'conditions' => 'username = ?1 OR phone = ?2 AND state != 3',
             'bind' => [
                 1 => $create['username'],
                 2 => $create['phone']
-            ],
-            'columns' => 'id'
+            ]
         ]))
             return ['code'=>20001];//The username is already exists
+        $roleModel = new AdminRole();
+        if(!$roleModel->checkChildOfRole($create['rid']))
+            return ['code'=>30004];
         if(!$this->create($create)){
             return ['code'=>20000];//Create fail
         }
@@ -178,12 +180,22 @@ class AdminUsers extends BaseModel
      * @return array
      */
     public function getUserRecords($conditions = []){
-        list($data,$total) = $this->getRecords($conditions,
-            ['id','username','phone','email','state','truename','role_id','created_at']);
-        if(!$data){
-            $data = [];
-            $total = 0;
+        $_SESSION['rid'] = 2;
+        $conditions['id!='] = 1;
+        $roleModel = new AdminRole();
+        if($_SESSION['rid'] != 1){
+            $children = $roleModel->findChildByParentId($_SESSION['rid']);
+            if(empty($children))
+                return ['code'=>0,'data'=>[],'total'=>0];
+            if(isset($conditions['rid'])){
+                if(!in_array($conditions['role_id'],$children))
+                    return ['code'=>0,'data'=>[],'total'=>0];
+            }else{
+                $conditions['role_id'] = $children;
+            }
         }
+        list($data,$total) = $this->getRecords($conditions,
+            ['id','username','phone','email','state','true_name','role_id','created_at']);
         return [
             'code' => 0,
             'data' => $data,
@@ -194,18 +206,22 @@ class AdminUsers extends BaseModel
 
     public function updateUserRecord($update = []){
         $user = $this->findFirst([
-            'conditions' => 'id = ?1',
+            'conditions' => 'id = ?1 AND state != 3',
             'bind' => [
                 1 => $update['id']
             ]
         ]);
         if(!$user)
             return ['code'=>20002];//User is not exists.
-
-        //@TODO 验证操作员是否有权限修改该账户信息
-
+        $roleModel = new AdminRole();
+        if(!$roleModel->checkChildOfRole($user->rid))
+            return ['code'=>30004];
+        if(isset($update['rid']) && !$roleModel->checkChildOfRole($update['rid']))
+            return ['code'=>30004];
         if($user->update($update) !== true)
             return ['code'=>20003];//Failed
         return ['code'=>0];
     }
+
+
 }
