@@ -6,6 +6,8 @@
  * Time: 22:25
  */
 
+use Phalcon\Validation\Validator\Callback;
+
 class Validators extends Phalcon\Validation
 {
 
@@ -36,7 +38,7 @@ class Validators extends Phalcon\Validation
                 $this->add([$k], $object);
             }
         }
-        $checkResult = $this->validate($data);
+        $checkResult = $this->validate($params);
         if(count($checkResult)){
             foreach($checkResult as $msg)
                 return ['code'=>10006,'msg'=>$msg->getMessage()];
@@ -49,5 +51,20 @@ class Validators extends Phalcon\Validation
         if(!class_exists($func_name))
             return false;
         return new $func_name($args[0] ?? []);
+    }
+
+    private function Access(){
+        return new Callback([
+            "message" => "The access is error",
+            "callback" => function($data) {
+                $access = $data['access'];
+                if(!is_array($access) || empty($access))
+                    return false;
+                foreach($access as $v)
+                    if(!is_numeric($v))
+                        return false;
+                return true;
+            }
+        ]);
     }
 }

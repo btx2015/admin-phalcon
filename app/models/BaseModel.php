@@ -5,6 +5,8 @@
  * Date: 2018/3/27
  * Time: 13:27
  */
+use \Phalcon\Mvc\Model\Transaction\Manager;
+use \Phalcon\Mvc\Model\Transaction\Failed;
 
 class BaseModel extends \Phalcon\Mvc\Model
 {
@@ -13,9 +15,16 @@ class BaseModel extends \Phalcon\Mvc\Model
 
     public $conn;
 
+    protected $manager;
+
+    protected $transaction;
+
+    protected $failed;
+
     protected function onConstruct()
     {
         $this->conn = $this->getReadConnection();
+        $this->manager = new Manager();
     }
 
     /**

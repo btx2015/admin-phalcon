@@ -36,20 +36,51 @@ class RoleController extends \ControllerBase
             "name"      => ['name',['PresenceOf']],
             "pid"       => ['pid',['PresenceOf','Numericality']],
         ],$this->params);
-        if(isset($conditions['code']))
+        if(isset($create['code']))
             $this->returnResult($create);
         $this->returnResult($this->model->createRoleRecords($create));
     }
 
     public function updateAction(){
-        $create = $this->valid->validateParams([
+        $update = $this->valid->validateParams([
             "id"        => ['id',['PresenceOf']],
             "name"      => ['name',[]],
             "pid"       => ['pid',['Numericality']],
             "state"     => ['state',['InclusionIn'],['InclusionIn'=>['domain'=>[1,2,3]]]]
         ],$this->params);
-        if(isset($conditions['code']))
+        if(isset($update['code']))
+            $this->returnResult($update);
+        $this->returnResult($this->model->createRoleRecords($update));
+    }
+
+    public function assignAction(){
+        $create = $this->valid->validateParams([
+            "rid"       => ['rid',['PresenceOf','Numericality']]
+        ],$this->params);
+        if(isset($create['code']))
             $this->returnResult($create);
-        $this->returnResult($this->model->createRoleRecords($create));
+        $accessModel = new \AdminRole();
+        $this->returnResult($accessModel->getRoleAccess($create['rid']));
+    }
+
+    public function addAccessAction(){
+        $create = $this->valid->validateParams([
+            "rid"       => ['role_id',['PresenceOf','Numericality']],
+            "access"    => ['access',['PresenceOf','Access']]
+        ],$this->params);
+        if(isset($create['code']))
+            $this->returnResult($create);
+        $this->returnResult($this->model->addRoleAccess($create));
+    }
+
+    public function delAccessAction(){
+        $update = $this->valid->validateParams([
+            "rid" => ['role_id',['PresenceOf','Numericality']],
+            "aid" => ['id',['PresenceOf','Numericality']]
+        ],$this->params);
+        if(isset($update['code']))
+            $this->returnResult($update);
+        $accessModel = new \AdminRole();
+        $this->returnResult($accessModel->delRoleAccess($update));
     }
 }

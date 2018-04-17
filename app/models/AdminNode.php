@@ -87,20 +87,7 @@ class AdminNode extends BaseModel
         return 'admin_node';
     }
 
-    public function createNodeRecords($create = []){
-        if(empty($create))
-            return ['code'=>40000];//Empty array
-        if($this->findFirst([
-            'conditions' => 'name = ?1 AND pid = ?2 AND state != 3',
-            'bind' => [
-                1 => $create['name'],
-                2 => $create['pid'],
-            ]
-        ]))
-            return ['code'=>40001];//The node is already exists
-        if(!$this->create($create)){
-            return ['code'=>40000];//Create fail
-        }
-        return ['code'=>0];
+    public function getNode(){
+        return $this->find()->toArray();
     }
 }
