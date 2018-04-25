@@ -19,5 +19,12 @@ $router->add(
         'action'=>2,
     ]
 );
-
+$router->add(
+    '/admin',
+    [
+        'namespace'=>'admin',
+        'controller'=>'index',
+        'action'=>'index',
+    ]
+);
 $router->handle();
