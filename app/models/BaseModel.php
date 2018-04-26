@@ -75,15 +75,7 @@ class BaseModel extends \Phalcon\Mvc\Model
         }
     }
 
-    /**
-     * Get records by conditions
-     * @param array $conditions
-     * @param array $fields
-     * @return array
-     */
-    public function getRecords($conditions = [],$fields = []){
-        if(!is_array($conditions) || !is_array($fields))  return [false,false];
-        list($conditions,$limit,$offset,$orderBy) = $this->beforeGetRecords($conditions);
+    public function getRecordsByCondition($conditions = [],$fields = [],$limit = 0,$offset = 0,$orderBy = []){
         try{
             $query = $this->query();
             $query->where('1 = 1');
@@ -145,14 +137,15 @@ class BaseModel extends \Phalcon\Mvc\Model
 
             $records = $query->execute();
             $records = $records->toArray();
+            if($limit != -1){
+                $query->columns(['COUNT(*) AS total']);
+                $total = $query->execute();
+                $total = $total->getFirst();
+                $total = $total ? $total->total : 0;
+                return [$records,$total];
+            }
 
-            $query->columns(['COUNT(*) AS total']);
-            $total = $query->execute();
-            $total = $total->getFirst();
-
-            $total = $total ? $total->total : 0;
-
-            return [$records,$total];
+            return $records;
 
         }catch(Exception $e){
             $sql_info = json_encode(@array_column($e->getTrace(), null,'function')['executePrepared']['args']);
@@ -160,6 +153,18 @@ class BaseModel extends \Phalcon\Mvc\Model
 
             return [false,false];
         }
+    }
+
+    /**
+     * Get records by conditions
+     * @param array $conditions
+     * @param array $fields
+     * @return array
+     */
+    public function getRecords($conditions = [],$fields = []){
+        if(!is_array($conditions) || !is_array($fields))  return [false,false];
+        list($conditions,$limit,$offset,$orderBy) = $this->beforeGetRecords($conditions);
+        return $this->getRecordsByCondition($conditions,$fields,$limit,$offset,$orderBy);
     }
 
     /**

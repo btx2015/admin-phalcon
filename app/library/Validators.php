@@ -67,4 +67,34 @@ class Validators extends Phalcon\Validation
             }
         ]);
     }
+
+    private function Roles(){
+        return new Callback([
+            "message" => "The roles is error",
+            "callback" => function($data) {
+                $access = $data['roles'];
+                if(!is_array($access) || empty($access))
+                    return false;
+                foreach($access as $v)
+                    if(!is_numeric($v))
+                        return false;
+                return true;
+            }
+        ]);
+    }
+
+    private function Users(){
+        return new Callback([
+            "message" => "The users is error",
+            "callback" => function($data) {
+                $access = array_unique($data['users']);
+                if(!is_array($access) || empty($access))
+                    return false;
+                foreach($access as $v)
+                    if(!is_numeric($v))
+                        return false;
+                return true;
+            }
+        ]);
+    }
 }

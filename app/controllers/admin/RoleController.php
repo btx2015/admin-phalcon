@@ -18,6 +18,20 @@ class RoleController extends \ControllerBase
         $this->model = new \AdminRole();
     }
 
+    public function indexAction(){
+        $this->assets->addCss("css/select2_metro.css");
+        $this->assets->addCss("css/DT_bootstrap.css");
+        $this->assets->addJs("js/jquery-migrate-1.2.1.min.js");
+        $this->assets->addJs("js/jquery-ui-1.10.1.custom.min.js");
+        $this->assets->addJs("js/jquery.slimscroll.min.js");
+        $this->assets->addJs("js/jquery.blockui.min.js");
+        $this->assets->addJs("js/select2.min.js");
+        $this->assets->addJs("js/jquery.dataTables.js");
+        $this->assets->addJs("js/DT_bootstrap.js");
+        $this->assets->addJs("js/table-managed.js");
+        $this->assets->addJs("js/btx-table.js");
+    }
+
     public function listAction(){
         $conditions = $this->valid->validateParams([
             "name"      => ['name',[]],
@@ -41,7 +55,7 @@ class RoleController extends \ControllerBase
         $this->returnResult($this->model->createRoleRecords($create));
     }
 
-    public function updateAction(){
+    public function editAction(){
         $update = $this->valid->validateParams([
             "id"        => ['id',['PresenceOf']],
             "name"      => ['name',[]],
@@ -50,12 +64,33 @@ class RoleController extends \ControllerBase
         ],$this->params);
         if(isset($update['code']))
             $this->returnResult($update);
-        $this->returnResult($this->model->createRoleRecords($update));
+        $this->returnResult($this->model->updateRoleRecords($update));
+    }
+
+    public function enableAction(){
+        $update = $this->valid->validateParams([
+            "roles" => ['roles',['PresenceOf','Roles']]
+        ],$this->params);
+        $this->returnResult($this->model->updateStateForRoles($update['roles'],1));
+    }
+
+    public function disableAction(){
+        $update = $this->valid->validateParams([
+            "roles" => ['roles',['PresenceOf','Roles']]
+        ],$this->params);
+        $this->returnResult($this->model->updateStateForRoles($update['roles'],2));
+    }
+
+    public function deleteAction(){
+        $update = $this->valid->validateParams([
+            "roles" => ['roles',['PresenceOf','Roles']]
+        ],$this->params);
+        $this->returnResult($this->model->updateStateForRoles($update['roles'],3));
     }
 
     public function assignAction(){
         $create = $this->valid->validateParams([
-            "rid"       => ['rid',['PresenceOf','Numericality']]
+            "rid" => ['rid',['PresenceOf','Numericality']]
         ],$this->params);
         if(isset($create['code']))
             $this->returnResult($create);

@@ -180,7 +180,6 @@ class AdminUsers extends BaseModel
      * @return array
      */
     public function getUserRecords($conditions = []){
-        $_SESSION['rid'] = 2;
         $conditions['id!='] = 1;
         $roleModel = new AdminRole();
         if($_SESSION['rid'] != 1){
@@ -223,5 +222,29 @@ class AdminUsers extends BaseModel
         return ['code'=>0];
     }
 
-
+    public function updateStateForUsers($users = [] ,$state = 1){
+        $where = ['id' => $users];
+        if($state == 1){
+            $where['state'] = 2;
+        }else if($state == 2){
+            $where['state'] = 1;
+        }else{
+            $where['state!='] = 3;
+        }
+        $usersData = $this->getRecordsByCondition($where,['id','role_id'],-1);
+        if(count($users) != count($usersData))
+            return ['code' => 20002];
+        $roleModel = new AdminRole();
+        $roleChildren = $roleModel->findChildByParentId($_SESSION['rid']);
+        foreach($usersData as &$v){
+            if(!in_array($v['role_id'],$roleChildren))
+                return ['code' => 20004];
+            $v['state'] = $state;
+            unset($v['role_id']);
+            unset($v);
+        }
+        if($this->saveRecords($usersData,['id','state'],true) !== true)
+            return ['code' => 20005];
+        return ['code' => 0];
+    }
 }

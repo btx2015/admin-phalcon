@@ -57,7 +57,7 @@
                 </div>
             </div>
             <!-- END PAGE HEADER-->
-
+            <?= $this->getContent() ?>
         </div>
         <!-- END PAGE CONTAINER-->
     </div>

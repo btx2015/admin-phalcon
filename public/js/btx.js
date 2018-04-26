@@ -4,18 +4,18 @@ jQuery(document).ready(function () {
 
     Index.init();
 
-    Index.initJQVMAP(); // init index page's custom scripts
+    // Index.initJQVMAP(); // init index page's custom scripts
+    //
+    // Index.initCalendar(); // init index page's custom scripts
+    //
+    // Index.initCharts(); // init index page's custom scripts
+    //
+    // Index.initChat();
 
-    Index.initCalendar(); // init index page's custom scripts
+    // Index.initMiniCharts();
 
-    Index.initCharts(); // init index page's custom scripts
+    // Index.initDashboardDaterange();
 
-    Index.initChat();
-
-    Index.initMiniCharts();
-
-    Index.initDashboardDaterange();
-
-    Index.initIntro();
+    // Index.initIntro();
 
 });

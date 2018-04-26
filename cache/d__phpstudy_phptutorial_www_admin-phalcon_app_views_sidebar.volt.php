@@ -18,28 +18,45 @@
             <!-- END RESPONSIVE QUICK SEARCH FORM -->
         </li>
         <?php foreach ($menu as $item) { ?>
-        <li class="">
-            <?php if (isset($item['child'])) { ?>
-            <a href="javascript:;">
-                <i class="icon-cogs"></i>
-                <span class="title"><?= $item['tittle'] ?></span>
-                <span class="arrow "></span>
-            </a>
-            <ul class="sub-menu">
-                <?php foreach ($item['child'] as $item) { ?>
-                <li>
-                    <a href="<?= $item['href'] ?>"><i class="<?= $item['icon'] ?>"></i><?= $item['tittle'] ?></a>
-                </li>
-                <?php } ?>
+            <?php if (isset($item['active'])) { ?>
+                <li class="active">
             <?php } else { ?>
-
-                <a href="<?= $item['href'] ?>">
-                    <i class="<?= $item['icon'] ?>"></i>
-                    <span class="title"><?= $item['tittle'] ?></span>
-                    <span class=" "></span>
-                </a>
+                <li>
+            <?php } ?>
+                <?php if (isset($item['child'])) { ?>
+                    <a href="javascript:;">
+                        <i class="<?= $item['icon'] ?>"></i>
+                        <span class="title"><?= $item['tittle'] ?></span>
+                        <?php if (isset($item['active'])) { ?>
+                        <span class="selected"></span>
+                        <span class="arrow open"></span>
+                        <?php } else { ?>
+                        <span class="arrow "></span>
+                        <?php } ?>
+                    </a>
+                    <ul class="sub-menu">
+                        <?php foreach ($item['child'] as $item) { ?>
+                        <?php if (isset($item['active'])) { ?>
+                        <li class="active">
+                            <?php } else { ?>
+                        <li>
+                        <?php } ?>
+                            <a href="<?= $item['href'] ?>"><i class="<?= $item['icon'] ?>"></i><?= $item['tittle'] ?></a>
+                        </li>
+                        <?php } ?>
+                    </ul>
+                <?php } else { ?>
+                    <a href="<?= $item['href'] ?>">
+                        <i class="<?= $item['icon'] ?>"></i>
+                        <span class="title"><?= $item['tittle'] ?></span>
+                        <?php if (isset($item['active'])) { ?>
+                        <span class="selected"></span>
+                        <?php } else { ?>
+                        <span class=""></span>
+                        <?php } ?>
+                    </a>
                 <?php } ?>
-        </li>
+            </li>
         <?php } ?>
     </ul>
     <!-- END SIDEBAR MENU -->

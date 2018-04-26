@@ -8,7 +8,7 @@
 
 namespace admin;
 
-class UserController extends \ControllerBase
+class AdminController extends \ControllerBase
 {
     private $model;
     protected function onConstruct()
@@ -18,6 +18,10 @@ class UserController extends \ControllerBase
     }
 
     public function loginAction(){
+
+    }
+
+    public function indexAction(){
 
     }
 
@@ -48,7 +52,7 @@ class UserController extends \ControllerBase
         $this->returnResult($this->model->getUserRecords($conditions));
     }
 
-    public function updateAction(){
+    public function editAction(){
         $update = $this->valid->validateParams([
             "id"        => ['id',['PresenceOf','Numericality']],
             "username"  => ['username',[]],
@@ -61,5 +65,26 @@ class UserController extends \ControllerBase
         if(isset($update['code']))
             $this->returnResult($update);
         $this->returnResult($this->model->updateUserRecord($update));
+    }
+
+    public function enableAction(){
+        $update = $this->valid->validateParams([
+            "users" => ['users',['PresenceOf','Users']]
+        ],$this->params);
+        $this->returnResult($this->model->updateStateForUsers($update['users'],1));
+    }
+
+    public function disableAction(){
+        $update = $this->valid->validateParams([
+            "users" => ['users',['PresenceOf','Users']]
+        ],$this->params);
+        $this->returnResult($this->model->updateStateForUsers($update['users'],2));
+    }
+
+    public function deleteAction(){
+        $update = $this->valid->validateParams([
+            "users" => ['users',['PresenceOf','Users']]
+        ],$this->params);
+        $this->returnResult($this->model->updateStateForUsers($update['users'],3));
     }
 }

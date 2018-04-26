@@ -57,7 +57,7 @@
                 </div>
             </div>
             <!-- END PAGE HEADER-->
-
+            {{ content() }}
         </div>
         <!-- END PAGE CONTAINER-->
     </div>

@@ -74,7 +74,6 @@ class AdminRole extends BaseModel
     }
 
     public function getRoleRecords($conditions = []){
-        $_SESSION['rid'] = 2;
         if($_SESSION['rid'] != 1){
             $children = $this->findChildByParentId($_SESSION['rid']);
             if(empty($children))
@@ -131,6 +130,30 @@ class AdminRole extends BaseModel
         return ['code'=>0];
     }
 
+    public function updateStateForRoles($roles = [] ,$state = 1){
+        $where = ['id' => $roles];
+        if($state == 1){
+            $where['state'] = 2;
+        }else if($state == 2){
+            $where['state'] = 1;
+        }else{
+            $where['state!='] = 3;
+        }
+        $rolesData = $this->getRecordsByCondition($where,['id'],-1);
+        if(count($roles) != count($rolesData))
+            return ['code' => 30002];
+        $roleChildren = $this->findChildByParentId($_SESSION['rid']);
+        foreach($rolesData as &$v){
+            if(!in_array($v['id'],$roleChildren))
+                return ['code' => 30004];
+            $v['state'] = $state;
+            unset($v);
+        }
+        if($this->saveRecords($rolesData,['id','state'],true) !== true)
+            return ['code' => 30005];
+        return ['code' => 0];
+    }
+
     /**
      * Check a role whether belong to current user
      * @param int $childId
@@ -147,20 +170,22 @@ class AdminRole extends BaseModel
         return true;
     }
 
-    public function findChildByParentId($parentId = 0){
+    public function findChildByParentId($parentId = 0,$roles = false){
         $result = [];
         if(!is_numeric($parentId))
             return $result;
-        $roles = $this->find([
-            "conditions" => "state != 3",
-            "columns" => "id,pid"
-        ])->toArray();
+        if($roles === false){
+            $roles = $this->find([
+                "conditions" => "state != 3",
+                "columns" => "id,pid"
+            ])->toArray();
+        }
         if(empty($roles))
-            return $result;
+            return false;
         foreach($roles as $k => $v){
             if($v['pid'] == $parentId){
                 unset($roles[$k]);
-                $children = $this->findChildByParentId($roles,$v['id']);
+                $children = $this->findChildByParentId($v['id'],$roles);
                 $result = array_merge($result,[$v['id']],$children);
             }
         }
