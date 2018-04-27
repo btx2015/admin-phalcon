@@ -1,76 +1,81 @@
 <!DOCTYPE html>
-<!--[if IE 8]>
-<html lang="en" class="ie8 no-js"> <![endif]-->
-<!--[if IE 9]>
-<html lang="en" class="ie9 no-js"> <![endif]-->
-<!--[if !IE]><!-->
-<html lang="en" class="no-js"> <!--<![endif]-->
-<!-- BEGIN HEAD -->
+<html>
 <head>
-    <meta charset="utf-8" />
-    <title>Btx | Admin Dashboard Template</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <meta content="" name="description" />
-    <meta content="" name="author" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>layout 后台大布局 - Layui</title>
     <?= $this->assets->outputCss() ?>
-    <link rel="shortcut icon" href="image/favicon.ico" />
 </head>
-<!-- END HEAD -->
-<!-- BEGIN BODY -->
-<body class="page-header-fixed">
-<!-- BEGIN HEADER -->
-<?php $this->partial(('header')); ?>
-<!-- END HEADER -->
-<!-- BEGIN CONTAINER -->
-<div class="page-container">
-    <!-- BEGIN SIDEBAR -->
-    <?php $this->partial(('sidebar')); ?>
-    <!-- END SIDEBAR -->
-    <!-- BEGIN PAGE -->
-    <div class="page-content">
-        <!-- BEGIN SAMPLE PORTLET CONFIGURATION MODAL FORM-->
-        <div id="portlet-config" class="modal hide">
-            <div class="modal-header">
-                <button data-dismiss="modal" class="close" type="button"></button>
-                <h3>Widget Settings</h3>
-            </div>
-            <div class="modal-body">
-                Widget settings form goes here
-            </div>
-        </div>
-        <!-- END SAMPLE PORTLET CONFIGURATION MODAL FORM-->
-        <!-- BEGIN PAGE CONTAINER-->
-        <div class="container-fluid">
-            <!-- BEGIN PAGE HEADER-->
-            <div class="row-fluid">
-                <div class="span12">
-                    <!-- BEGIN PAGE TITLE & BREADCRUMB-->
-                    <ul class="breadcrumb">
-                        <li>
-                            <i class="icon-home"></i>
-                            <a href="index.html">Home</a>
-                            <i class="icon-angle-right"></i>
-                        </li>
-                        <li><a href="#">Dashboard</a></li>
-                    </ul>
-                    <!-- END PAGE TITLE & BREADCRUMB-->
-                </div>
-            </div>
-            <!-- END PAGE HEADER-->
-            <?= $this->getContent() ?>
-        </div>
-        <!-- END PAGE CONTAINER-->
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">layui 后台布局</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item"><a href="">控制台</a></li>
+            <li class="layui-nav-item"><a href="">商品管理</a></li>
+            <li class="layui-nav-item"><a href="">用户</a></li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">其它系统</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">邮件管理</a></dd>
+                    <dd><a href="">消息管理</a></dd>
+                    <dd><a href="">授权管理</a></dd>
+                </dl>
+            </li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    贤心
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd>
+                    <dd><a href="">安全设置</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="">退了</a></li>
+        </ul>
     </div>
-    <!-- END PAGE -->
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">所有商品</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;">列表一</a></dd>
+                        <dd><a href="javascript:;">列表二</a></dd>
+                        <dd><a href="javascript:;">列表三</a></dd>
+                        <dd><a href="">超链接</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">解决方案</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;">列表一</a></dd>
+                        <dd><a href="javascript:;">列表二</a></dd>
+                        <dd><a href="">超链接</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item"><a href="">云市场</a></li>
+                <li class="layui-nav-item"><a href="">发布商品</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">内容主体区域</div>
+    </div>
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © layui.com - 底部固定区域
+    </div>
 </div>
-<!-- END CONTAINER -->
-<!-- BEGIN FOOTER -->
-<?php $this->partial(('footer')); ?>
-<!-- END FOOTER -->
-<!-- BEGIN JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->
-<!-- BEGIN CORE PLUGINS -->
 <?= $this->assets->outputJs() ?>
-<!-- END JAVASCRIPTS -->
 </body>
-<!-- END BODY -->
 </html>
