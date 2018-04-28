@@ -1,63 +1,36 @@
-<div class="page-sidebar nav-collapse collapse">
-    <!-- BEGIN SIDEBAR MENU -->
-    <ul class="page-sidebar-menu">
-        <li>
-            <!-- BEGIN SIDEBAR TOGGLER BUTTON -->
-            <div class="sidebar-toggler hidden-phone"></div>
-            <!-- BEGIN SIDEBAR TOGGLER BUTTON -->
-        </li>
-        <li>
-            <!-- BEGIN RESPONSIVE QUICK SEARCH FORM -->
-            <form class="sidebar-search">
-                <div class="input-box">
-                    <a href="javascript:;" class="remove"></a>
-                    <input type="text" placeholder="Search..." />
-                    <input type="button" class="submit" value=" " />
-                </div>
-            </form>
-            <!-- END RESPONSIVE QUICK SEARCH FORM -->
-        </li>
-        <?php foreach ($menu as $item) { ?>
-            <?php if (isset($item['active'])) { ?>
-                <li class="active">
-            <?php } else { ?>
-                <li>
-            <?php } ?>
-                <?php if (isset($item['child'])) { ?>
-                    <a href="javascript:;">
-                        <i class="<?= $item['icon'] ?>"></i>
-                        <span class="title"><?= $item['tittle'] ?></span>
-                        <?php if (isset($item['active'])) { ?>
-                        <span class="selected"></span>
-                        <span class="arrow open"></span>
-                        <?php } else { ?>
-                        <span class="arrow "></span>
-                        <?php } ?>
-                    </a>
-                    <ul class="sub-menu">
-                        <?php foreach ($item['child'] as $item) { ?>
-                        <?php if (isset($item['active'])) { ?>
-                        <li class="active">
-                            <?php } else { ?>
-                        <li>
-                        <?php } ?>
-                            <a href="<?= $item['href'] ?>"><i class="<?= $item['icon'] ?>"></i><?= $item['tittle'] ?></a>
-                        </li>
-                        <?php } ?>
-                    </ul>
+<style type="text/css">
+    .layui-icon { padding-right: 10px; }
+    .layui-nav { background-color:#20222A; }
+    dd a { margin-left: 30px; }
+</style>
+<div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll">
+        <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+        <ul class="layui-nav layui-nav-tree" lay-shrink="all" lay-filter="test">
+            <?php foreach ($menu as $item) { ?>
+                <?php if (isset($item['active'])) { ?>
+                    <li class="layui-nav-item layui-nav-itemed">
                 <?php } else { ?>
-                    <a href="<?= $item['href'] ?>">
-                        <i class="<?= $item['icon'] ?>"></i>
-                        <span class="title"><?= $item['tittle'] ?></span>
-                        <?php if (isset($item['active'])) { ?>
-                        <span class="selected"></span>
-                        <?php } else { ?>
-                        <span class=""></span>
-                        <?php } ?>
-                    </a>
+                    <li class="layui-nav-item">
                 <?php } ?>
-            </li>
-        <?php } ?>
-    </ul>
-    <!-- END SIDEBAR MENU -->
+                    <?php if (isset($item['child'])) { ?>
+                        <a href="javascript:;"><i class="layui-icon"><?= $item['icon'] ?></i><cite><?= $item['tittle'] ?></cite></a>
+                            <dl class="layui-nav-child">
+                                <?php foreach ($item['child'] as $item) { ?>
+                                    <?php if (isset($item['active'])) { ?>
+                                        <dd class="layui-this">
+                                    <?php } else { ?>
+                                        <dd>
+                                    <?php } ?>
+                                            <a href="<?= $item['href'] ?>"><cite><?= $item['tittle'] ?></cite></a>
+                                        </dd>
+                                <?php } ?>
+                            </dl>
+                    <?php } else { ?>
+                        <a href="<?= $item['href'] ?>"><i class="layui-icon"><?= $item['icon'] ?></i><cite><?= $item['tittle'] ?></cite></a>
+                <?php } ?>
+                </li>
+            <?php } ?>
+        </ul>
+    </div>
 </div>

@@ -24,7 +24,7 @@ class ControllerBase extends Controller
         $this->view->setVar('menu',$menu);
 
         $this->assets();
-        $_SESSION['rid'] = 2;
+        $_SESSION['rid'] = 1;
     }
 
     protected function initParams(){
@@ -75,8 +75,8 @@ class ControllerBase extends Controller
 
     public function getMenuData(){
         $menuData = [
-            ["name" => " 首  页 " ,"icon" => "icon-home"  ,"controller" => "index" ,"action" => "index" ],
-            ["name" => "系统管理" ,"icon" => "icon-cogs",
+            ["name" => " 首  页 " ,"icon" => "&#xe68e;"  ,"controller" => "index" ,"action" => "index" ],
+            ["name" => "系统管理" ,"icon" => "&#xe620;",
                 "child" => [
                     ["name" => "角色管理" ,"icon" => "icon-group" ,"controller" => "role"   ,"action" => "index" ],
                     ["name" => "管 理 员" ,"icon" => "icon-user"  ,"controller" => "admin"  ,"action" => "index" ],

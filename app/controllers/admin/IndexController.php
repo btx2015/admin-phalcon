@@ -12,7 +12,7 @@ class IndexController extends \ControllerBase
 
     public function indexAction()
     {
-
+//        die("123");
     }
 
     public function testAction(){

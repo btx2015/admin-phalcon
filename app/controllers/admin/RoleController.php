@@ -19,17 +19,7 @@ class RoleController extends \ControllerBase
     }
 
     public function indexAction(){
-        $this->assets->addCss("css/select2_metro.css");
-        $this->assets->addCss("css/DT_bootstrap.css");
-        $this->assets->addJs("js/jquery-migrate-1.2.1.min.js");
-        $this->assets->addJs("js/jquery-ui-1.10.1.custom.min.js");
-        $this->assets->addJs("js/jquery.slimscroll.min.js");
-        $this->assets->addJs("js/jquery.blockui.min.js");
-        $this->assets->addJs("js/select2.min.js");
-        $this->assets->addJs("js/jquery.dataTables.js");
-        $this->assets->addJs("js/DT_bootstrap.js");
-        $this->assets->addJs("js/table-managed.js");
-        $this->assets->addJs("js/btx-table.js");
+        $this->assets->addJs('admin/role/index.js');
     }
 
     public function listAction(){
