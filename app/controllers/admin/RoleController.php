@@ -84,8 +84,7 @@ class RoleController extends \ControllerBase
         ],$this->params);
         if(isset($create['code']))
             $this->returnResult($create);
-        $accessModel = new \AdminRole();
-        $this->returnResult($accessModel->getRoleAccess($create['rid']));
+        $this->returnResult($this->model->getRoleAccess($create['rid']));
     }
 
     public function addAccessAction(){
@@ -105,7 +104,6 @@ class RoleController extends \ControllerBase
         ],$this->params);
         if(isset($update['code']))
             $this->returnResult($update);
-        $accessModel = new \AdminRole();
-        $this->returnResult($accessModel->delRoleAccess($update));
+        $this->returnResult($this->model->delRoleAccess($update));
     }
 }

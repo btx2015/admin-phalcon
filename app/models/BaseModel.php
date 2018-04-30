@@ -80,26 +80,6 @@ class BaseModel extends \Phalcon\Mvc\Model
             $query = $this->query();
             $query->where('1 = 1');
 
-            if($fields)
-                $query->columns($fields);
-
-            if($limit > 0){
-                $limit = ($limit < 1000) ? $limit : 1000;
-                $offset = $offset >= 0 ? $offset : 0;
-                $query->limit($limit,$offset);
-            }
-
-            if($orderBy){
-                $orderByStr = ' ';
-                foreach($orderBy as $key => $val){
-                    $orderByStr = $val == 1 ? $orderByStr." {$key} DESC," : $orderByStr." {$key} ,";
-                }
-                $orderByStr = substr($orderByStr, 0, -1);
-            }else{
-                $orderByStr = " id DESC";
-            }
-            $query->orderBy($orderByStr);
-
             $whereArr = $index = [];
             foreach($conditions as $key => $val){
                 if(!isset($val)){
@@ -135,14 +115,40 @@ class BaseModel extends \Phalcon\Mvc\Model
             if($whereArr)
                 $query->bind($whereArr);
 
-            $records = $query->execute();
-            $records = $records->toArray();
+
             if($limit != -1){
                 $query->columns(['COUNT(*) AS total']);
                 $total = $query->execute();
                 $total = $total->getFirst();
                 $total = $total ? $total->total : 0;
-                return [$records,$total];
+            }
+
+            if($fields)
+                $query->columns($fields);
+
+            if($limit > 0){
+                $limit = ($limit < 1000) ? $limit : 1000;
+                $offset = $offset >= 0 ? $offset : 0;
+                $query->limit($limit,$offset);
+            }
+
+            if($orderBy){
+                $orderByStr = ' ';
+                foreach($orderBy as $key => $val){
+                    $orderByStr = $val == 1 ? $orderByStr." {$key} DESC," : $orderByStr." {$key} ,";
+                }
+                $orderByStr = substr($orderByStr, 0, -1);
+            }else{
+                $orderByStr = " id DESC";
+            }
+            $query->orderBy($orderByStr);
+
+            $records = $query->execute();
+            $records = $records->toArray();
+
+
+            if($limit != -1){
+                return [$records ,$total];
             }
 
             return $records;
@@ -265,5 +271,30 @@ class BaseModel extends \Phalcon\Mvc\Model
 
         $conn = null;
         return $exeRtn;
+    }
+
+    public function translateRecords($records = [],$fields = []){
+
+        foreach($fields as $k => $v){
+            if(is_array($v)){
+                $data = array_flip(array_column($v['data'],$v['source']));
+                foreach($records as &$a){
+                    $a[$k.'_str'] = $v['data'][$data[$a[$k]]][$v['target']];
+                }
+            }else if($v === 'time'){
+                foreach($records as &$a)
+                    $a[$k.'_str'] = date("Y-m-d H:i:s");
+            }else{
+                if(!isset($translate)){
+                    $translateConfig = new \Phalcon\Config\Adapter\Php("../app/config/translate.php");
+                    $translate = $translateConfig->toArray();
+                }
+                foreach($records as &$a)
+                    $a[$k.'_str'] = $translate[$v][$a[$k]];
+            }
+            unset($a);
+        }
+
+        return $records;
     }
 }

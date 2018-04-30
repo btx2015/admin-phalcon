@@ -81,13 +81,23 @@ class AdminRole extends BaseModel
             $conditions['id'] = $children;
             if(isset($conditions['pid']) && !in_array($conditions['pid'],$children))
                 return ['code'=>0,'data'=>[],'total'=>0];
+        }else{
+            $conditions['id!='] = 1;
         }
         list($data,$total) = $this->getRecords($conditions,
             ['id','name','pid','state','created_at']);
+        if($data){
+            $pidData = array_unique(array_column($data,'pid'));
+            $parents = $this->getRecordsByCondition(['id'=>$pidData],['id','name'],-1);
+            $data = $this->translateRecords($data,[
+                'pid' => ['data' => $parents,'source' => 'id','target' => 'name'],
+                'state' => 'state',
+                'created_at' => 'time']);
+        }
         return [
             'code' => 0,
             'data' => $data,
-            'total' => $total,
+            'count' => $total,
         ];
     }
 
@@ -160,10 +170,10 @@ class AdminRole extends BaseModel
      * @return bool
      */
     public function checkChildOfRole($childId){
-        if(!$childId || !is_numeric($childId) || $_SESSION['rid'] == $childId)
-            return false;
         if($_SESSION['rid'] == 1)
             return true;
+        if(!$childId || !is_numeric($childId) || $_SESSION['rid'] == $childId)
+            return false;
         $children = $this->findChildByParentId($_SESSION['rid']);
         if(!in_array($childId,$children))
             return false;
