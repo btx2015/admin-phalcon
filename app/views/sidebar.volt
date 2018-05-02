@@ -1,7 +1,7 @@
 <style type="text/css">
     .layui-icon { padding-right: 10px; }
     .layui-nav { background-color:#20222A; }
-    dd a { margin-left: 30px; }
+    .layui-nav-tree dd a { margin-left: 30px; }
 </style>
 <div class="layui-side layui-bg-black">
     <div class="layui-side-scroll">
