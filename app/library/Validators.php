@@ -72,9 +72,12 @@ class Validators extends Phalcon\Validation
         return new Callback([
             "message" => "The roles is error",
             "callback" => function($data) {
+                if(!isset($data['roles']))
+                    return false;
                 $access = $data['roles'];
                 if(!is_array($access) || empty($access))
                     return false;
+                $access = array_unique($access);
                 foreach($access as $v)
                     if(!is_numeric($v))
                         return false;
@@ -87,9 +90,12 @@ class Validators extends Phalcon\Validation
         return new Callback([
             "message" => "The users is error",
             "callback" => function($data) {
-                $access = array_unique($data['users']);
+                if(!isset($data['users']))
+                    return false;
+                $access = $data['users'];
                 if(!is_array($access) || empty($access))
                     return false;
+                $access = array_unique($access);
                 foreach($access as $v)
                     if(!is_numeric($v))
                         return false;

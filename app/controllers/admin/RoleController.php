@@ -61,6 +61,8 @@ class RoleController extends \ControllerBase
         $update = $this->valid->validateParams([
             "roles" => ['roles',['PresenceOf','Roles']]
         ],$this->params);
+        if(isset($update['code']))
+            $this->returnResult($update);
         $this->returnResult($this->model->updateStateForRoles($update['roles'],1));
     }
 
@@ -68,6 +70,8 @@ class RoleController extends \ControllerBase
         $update = $this->valid->validateParams([
             "roles" => ['roles',['PresenceOf','Roles']]
         ],$this->params);
+        if(isset($update['code']))
+            $this->returnResult($update);
         $this->returnResult($this->model->updateStateForRoles($update['roles'],2));
     }
 
@@ -75,6 +79,8 @@ class RoleController extends \ControllerBase
         $update = $this->valid->validateParams([
             "roles" => ['roles',['PresenceOf','Roles']]
         ],$this->params);
+        if(isset($update['code']))
+            $this->returnResult($update);
         $this->returnResult($this->model->updateStateForRoles($update['roles'],3));
     }
 
