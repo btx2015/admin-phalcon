@@ -4,7 +4,7 @@
             <div class="layui-card-header">角色管理</div>
             <div class="layui-card-body">
                 <div class="layui-form-item">
-                    <div class="layui-inline layui-col-md12" id="button">
+                    <div class="layui-inline layui-col-md12" id="actions">
                         <div class="layui-input-inline" style="width: 330px;">
                             <div class="layui-btn-group">
                                 <button class="layui-btn" data-method="add">增加</button>
@@ -68,7 +68,13 @@
         <div class="layui-form-item">
             <label class="layui-form-label">角色名称</label>
             <div class="layui-input-block">
-                <input type="text" name="name" required  lay-verify="required" placeholder="请输入角色名称" autocomplete="off" class="layui-input">
+                <input type="text" name="name" lay-verify="required" placeholder="请输入角色名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="addSubmit">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
             </div>
         </div>
     </form>
@@ -102,7 +108,13 @@
         <div class="layui-form-item">
             <label class="layui-form-label">角色名称</label>
             <div class="layui-input-block">
-                <input type="text" name="name" required  lay-verify="required" placeholder="请输入角色名称" autocomplete="off" class="layui-input">
+                <input type="text" name="name" lay-verify="required" placeholder="请输入角色名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="editSubmit">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
             </div>
         </div>
     </form>

@@ -3,16 +3,15 @@ layui.use(['table','layer','laydate','form'], function(){
     var layer = layui.layer;
     var laydate = layui.laydate;
     var $ = layui.jquery;
+    var form = layui.form;
 
-    function request(url,data,msg,index){
+    function request(url,data,msg){
         $.post(url
             ,data
             ,function(res){
                 if(res.code === 0){
                     $(".layui-laypage-btn").click();
-                    if(typeof index !== 'undefined'){
-                        layer.close(index);
-                    }
+                    layer.closeAll();
                     layer.msg(msg,{time:2000});
                     return true;
                 }else{
@@ -58,32 +57,29 @@ layui.use(['table','layer','laydate','form'], function(){
     table.on('tool(toolbar)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
         var data = obj.data; //获得当前行数据
         var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
-        var tr = obj.tr; //获得当前行 tr 的DOM对象
+        // var tr = obj.tr; //获得当前行 tr 的DOM对象
 
         if(layEvent === 'edit'){ //编辑
             layer.open({
                 type: 1
                 ,title: '编辑'
                 ,area: ['520px','500px']
-                ,id: 'layerDemo'+ '编辑' //防止重复弹出
+                ,id: 'layerDemo'+ 'edit' //防止重复弹出
                 ,content: $('#edit')
-                ,btn: ['提交']
                 ,btnAlign: 'c' //按钮居中
                 ,shade: 0 //不显示遮罩
+                ,success: function(layero){
+                    for(var key in data){
+                        var field = $("#editForm :input[name='"+key+"']");
+                        if(field.length > 0){
+                            field.val(data[key]);
+                            form.render();
+                        }
+                    }
+                }
                 ,cancel: function(index, layero){
                     $('#edit').hide();
                     layer.close(index)
-                }
-                ,yes: function(index, layero){
-                    if(confirm('确认添加吗')){ //只有当点击confirm框的确定时，该层才会关闭
-                        request('add',$("#editForm").serialize(),'增加成功',index);
-                        //同步更新缓存对应的值
-                        obj.update({
-                            username: '123'
-                            ,title: 'xxx'
-                        });
-                    }
-                    return false;
                 }
             });
         }
@@ -112,28 +108,16 @@ layui.use(['table','layer','laydate','form'], function(){
             layer.open({
                 type: 1
                 ,title: text
-                ,area: ['520px','500px']
+                ,area: '520px'
                 ,id: 'layerDemo'+text //防止重复弹出
                 ,content: $('#add')
-                ,btn: ['提交','重置']
                 ,btnAlign: 'c' //按钮居中
                 ,shade: 0 //不显示遮罩
                 ,cancel: function(index, layero){
                     $('#add').hide();
                     layer.close(index)
                 }
-                ,yes: function(index, layero){
-                    layer.confirm('确认增加吗', {icon: 3, title:'提示'}, function(indexs){
-                        layer.close(indexs);
-                        request('add',$("#addForm").serialize(),'增加成功',index);
-                    });
-                    return false;
-                }
             });
-        }
-        ,edit: function(){
-
-            // $(".layui-laypage-btn").click()
         }
         ,enable: function(){
             var checkData = handleCheck('请选择要启用的角色');
@@ -180,13 +164,44 @@ layui.use(['table','layer','laydate','form'], function(){
         }
     };
 
-    $('#button .layui-btn').on('click', function(){
+    $('#actions .layui-btn').on('click', function(){
         var othis = $(this), method = othis.data('method');
         active[method] ? active[method].call(this, othis) : '';
     });
 
-    $('#toolbar .layui-btn').on('click', function(){
-        var othis = $(this), method = othis.data('method');
-        active[method] ? active[method].call(this, othis) : '';
+    form.verify({
+        name: function(value, item){ //value：表单的值、item：表单的DOM对象
+            if(!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)){
+                return '用户名不能有特殊字符';
+            }
+            if(/(^\_)|(\__)|(\_+$)/.test(value)){
+                return '用户名首尾不能出现下划线\'_\'';
+            }
+            if(/^\d+\d+\d$/.test(value)){
+                return '用户名不能全为数字';
+            }
+        }
+
+        //我们既支持上述函数式的方式，也支持下述数组的形式
+        //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
+        ,pid: [
+            /^[\S]{6,12}$/
+            ,'密码必须6到12位，且不能出现空格'
+        ]
+    });
+
+    form.on('submit(addSubmit)', function(data){
+        layer.confirm('确认增加吗', {icon: 3, title:'提示'}, function(index){
+            layer.close(index);
+            request('add',data.field,'增加成功');
+        });
+        return false;
+    });
+    form.on('submit(editSubmit)', function(data){
+        layer.confirm('确认修改吗', {icon: 3, title:'提示'}, function(index){
+            layer.close(index);
+            request('edit',data.field,'编辑成功');
+        });
+        return false;
     });
 });
