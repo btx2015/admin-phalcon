@@ -20,6 +20,13 @@ class RoleController extends \ControllerBase
 
     public function indexAction(){
         $this->assets->addJs('admin/role/index.js');
+        $this->view->setVar('access',['add'=>1,'edit'=>1,'assign'=>1,'enable'=>1,'disable'=>1,'delete'=>1]);
+        $model = new \AdminNode();
+        $this->view->setVar('nodes',$model->getFormatNode());
+    }
+
+    public function allAction(){
+        $this->returnResult($this->model->getAllRoles());
     }
 
     public function listAction(){
@@ -85,12 +92,12 @@ class RoleController extends \ControllerBase
     }
 
     public function assignAction(){
-        $create = $this->valid->validateParams([
+        $condition = $this->valid->validateParams([
             "rid" => ['rid',['PresenceOf','Numericality']]
         ],$this->params);
-        if(isset($create['code']))
-            $this->returnResult($create);
-        $this->returnResult($this->model->getRoleAccess($create['rid']));
+        if(isset($condition['code']))
+            $this->returnResult($condition);
+        $this->returnResult($this->model->getRoleAccess($condition['rid']));
     }
 
     public function addAccessAction(){

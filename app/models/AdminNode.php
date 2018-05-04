@@ -90,4 +90,26 @@ class AdminNode extends BaseModel
     public function getNode(){
         return $this->find()->toArray();
     }
+
+    public function getFormatNode(){
+        $nodes = $this->find([
+            "columns" => 'id,tittle,pid'
+        ])->toArray();
+        return $this->findChildNode($nodes,0);
+    }
+
+    private function findChildNode($nodes,$pid = 0){
+        $nodesData = [];
+        foreach($nodes as $k => $v){
+            if($v['pid'] == $pid){
+                unset($nodes[$k]);
+                $child = $this->findChildNode($nodes,$v['id']);
+                if(!empty($child))
+                    $v['child'] = $child;
+                unset($v['pid']);
+                $nodesData[] = $v;
+            }
+        }
+        return $nodesData;
+    }
 }

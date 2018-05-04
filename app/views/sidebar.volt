@@ -1,5 +1,5 @@
 <style type="text/css">
-    .layui-icon { padding-right: 10px; }
+    .layui-nav-tree .layui-icon { padding-right: 10px; }
     .layui-nav { background-color:#20222A; }
     .layui-nav-tree dd a { margin-left: 30px; }
 </style>

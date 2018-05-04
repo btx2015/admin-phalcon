@@ -73,6 +73,20 @@ class AdminRole extends BaseModel
         return 'admin_role';
     }
 
+    public function getAllRoles(){
+        $conditions['state'] = 1;
+        if($_SESSION['rid'] != 1){
+            $children = $this->findChildByParentId($_SESSION['rid']);
+            if(empty($children))
+                return ['code'=>0,'data'=>[],'total'=>0];
+            $conditions['id'] = array_unshift($children,$_SESSION['rid']);
+        }
+        return [
+            'code' => 0,
+            'data' =>  $this->getRecordsByCondition($conditions,['id','name'],-1)
+        ];
+    }
+
     public function getRoleRecords($conditions = []){
         if($_SESSION['rid'] != 1){
             $children = $this->findChildByParentId($_SESSION['rid']);

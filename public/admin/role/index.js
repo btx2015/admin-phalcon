@@ -1,11 +1,13 @@
-layui.use(['table','layer','laydate','form'], function(){
+layui.use(['table','layer','laydate','form','element'], function(){
+
     var table = layui.table;
     var layer = layui.layer;
     var laydate = layui.laydate;
     var $ = layui.jquery;
     var form = layui.form;
+    var element = layui.element;
 
-    function request(url,data,msg){
+    function request(url,data,msg){//提交
         $.post(url
             ,data
             ,function(res){
@@ -13,16 +15,15 @@ layui.use(['table','layer','laydate','form'], function(){
                     $(".layui-laypage-btn").click();
                     layer.closeAll();
                     layer.msg(msg,{time:2000});
-                    return true;
                 }else{
                     layer.msg('[ ' + res.code + ' ] ' + res.msg,{time:5000});
-                    return false;
                 }
             }
             ,'json');
+        getRoles();//添加编辑角色，重置角色下拉框
     }
 
-    function handleCheck(msg){
+    function handleCheck(msg){//整理checkbox，便于批量处理
         var checkStatus = table.checkStatus('table');
         if(checkStatus.data.length < 1){
             layer.msg(msg);
@@ -35,7 +36,7 @@ layui.use(['table','layer','laydate','form'], function(){
         return res;
     }
 
-    var tableIns = table.render({
+    var tableIns = table.render({//渲染表格
         elem: '#table'
         ,url: '/admin/role/list'
         ,where: {}
@@ -49,21 +50,74 @@ layui.use(['table','layer','laydate','form'], function(){
             ,{field: 'created_at_str', title: '创建时间'}
             ,{title: '操作',fixed: 'right', width:150, align:'center', toolbar: '#toolbar'}
         ]]
-        ,done: function(res, curr, count){
-            data = res.data;
-        }
     });
+
+    //执行一个laydate实例
+    laydate.render({
+        elem: '#date' //指定元素
+        ,type: 'datetime'
+        ,range: true
+    });
+
+    function getRoles(){//获取角色父级下拉框
+        $.post('all',{},function(res){
+            if(res.code === 0){
+                var options = $("select[name='pid']");
+                options.each(function(){
+                    $(this).empty();
+                    $(this).append('<option value="">请选择角色父级</option>');
+                    for(var key in res.data){
+                        $(this).append('<option value="'+ res.data[key].id + '">'+ res.data[key].name +'</option>');
+                    }
+                });
+                form.render();
+            }else{
+                layer.msg('[ ' + res.code + ' ] ' + res.msg,{time:5000});
+            }
+        },'json');
+    }
+
+    getRoles();
 
     table.on('tool(toolbar)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
         var data = obj.data; //获得当前行数据
         var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
         // var tr = obj.tr; //获得当前行 tr 的DOM对象
+        active[layEvent] ? active[layEvent].call(this, data) : '';
+    });
 
-        if(layEvent === 'edit'){ //编辑
+    function getData(filter){//查询和重置
+        tableIns.reload({
+            where: filter
+            ,page: {
+                curr: 1 //重新从第 1 页开始
+            }
+        });
+    }
+
+    var active = {
+        add: function(othis){
+            //示范一个公告层
+            var text = othis.text();
+            layer.open({
+                type: 1
+                ,title: text
+                ,area: '520px'
+                ,id: 'layerDemoAdd' //防止重复弹出
+                ,content: $('#add')
+                ,btnAlign: 'c' //按钮居中
+                ,shade: 0 //不显示遮罩
+                ,cancel: function(index, layero){
+                    $('#add').hide();
+                    layer.close(index)
+                }
+            });
+        }
+        ,edit: function(data){
             layer.open({
                 type: 1
                 ,title: '编辑'
-                ,area: ['520px','500px']
+                ,area: '520px'
                 ,id: 'layerDemo'+ 'edit' //防止重复弹出
                 ,content: $('#edit')
                 ,btnAlign: 'c' //按钮居中
@@ -79,42 +133,6 @@ layui.use(['table','layer','laydate','form'], function(){
                 }
                 ,cancel: function(index, layero){
                     $('#edit').hide();
-                    layer.close(index)
-                }
-            });
-        }
-    });
-
-    function getData(filter){
-        tableIns.reload({
-            where: filter
-            ,page: {
-                curr: 1 //重新从第 1 页开始
-            }
-        });
-    }
-
-    //执行一个laydate实例
-    laydate.render({
-        elem: '#date' //指定元素
-        ,type: 'datetime'
-        ,range: true
-    });
-
-    var active = {
-        add: function(othis){
-            //示范一个公告层
-            var text = othis.text();
-            layer.open({
-                type: 1
-                ,title: text
-                ,area: '520px'
-                ,id: 'layerDemo'+text //防止重复弹出
-                ,content: $('#add')
-                ,btnAlign: 'c' //按钮居中
-                ,shade: 0 //不显示遮罩
-                ,cancel: function(index, layero){
-                    $('#add').hide();
                     layer.close(index)
                 }
             });
@@ -160,7 +178,23 @@ layui.use(['table','layer','laydate','form'], function(){
             $(".filter").each(function(){
                 $(this).val('');
             });
-            getData(filter)
+            getData(filter);
+            getRoles();
+        }
+        ,assign: function(){
+            layer.open({
+                type: 1
+                ,title: '分配权限'
+                ,area: '700px'
+                ,id: 'layerDemo'+ 'assign' //防止重复弹出
+                ,content: $('#assign')
+                ,btnAlign: 'c' //按钮居中
+                ,shade: 0 //不显示遮罩
+                ,cancel: function(index, layero){
+                    $('#assign').hide();
+                    layer.close(index)
+                }
+            });
         }
     };
 
@@ -190,6 +224,20 @@ layui.use(['table','layer','laydate','form'], function(){
         ]
     });
 
+    form.on('checkbox(module)', function(data){
+        var child = $('.module_'+data.value);
+        if(data.elem.checked){
+            child.each(function(){
+                $(this).prop('checked',true);
+            });
+        }else{
+            child.each(function(){
+                $(this).prop('checked',false);
+            });
+        }
+        form.render('checkbox','assignForm');
+    });
+
     form.on('submit(addSubmit)', function(data){
         layer.confirm('确认增加吗', {icon: 3, title:'提示'}, function(index){
             layer.close(index);
@@ -197,6 +245,7 @@ layui.use(['table','layer','laydate','form'], function(){
         });
         return false;
     });
+
     form.on('submit(editSubmit)', function(data){
         layer.confirm('确认修改吗', {icon: 3, title:'提示'}, function(index){
             layer.close(index);

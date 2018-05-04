@@ -7,10 +7,18 @@
                     <div class="layui-inline layui-col-md12" id="actions">
                         <div class="layui-input-inline" style="width: 330px;">
                             <div class="layui-btn-group">
+                                {% if access['add'] is defined %}
                                 <button class="layui-btn" data-method="add">增加</button>
+                                {% endif %}
+                                {% if access['enable'] is defined %}
                                 <button class="layui-btn layui-btn-normal" data-method="enable">启用</button>
+                                {% endif %}
+                                {% if access['disable'] is defined %}
                                 <button class="layui-btn layui-btn-warm" data-method="disable">禁用</button>
+                                {% endif %}
+                                {% if access['delete'] is defined %}
                                 <button class="layui-btn layui-btn-danger" data-method="delete">删除</button>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="layui-layout-right">
@@ -46,23 +54,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">角色父级</label>
             <div class="layui-input-block">
-                <select name="pid" lay-verify="required" lay-search>
-                    <option value="">请选择角色父级</option>
-                    <option value="1">上海</option>
-                    <option value="2">广州</option>
-                    <option value="3">深圳</option>
-                    <option value="4">杭州</option>
-                    <option value="0">北京</option>
-                    <option value="1">上海</option>
-                    <option value="2">广州</option>
-                    <option value="3">深圳</option>
-                    <option value="4">杭州</option>
-                    <option value="0">北京</option>
-                    <option value="1">上海</option>
-                    <option value="2">广州</option>
-                    <option value="3">深圳</option>
-                    <option value="4">杭州</option>
-                </select>
+                <select name="pid" lay-verify="required" lay-search></select>
             </div>
         </div>
         <div class="layui-form-item">
@@ -86,23 +78,7 @@
             <input type="hidden" name="id">
             <label class="layui-form-label">角色父级</label>
             <div class="layui-input-block">
-                <select name="pid" lay-verify="required" lay-search>
-                    <option value="">请选择角色父级</option>
-                    <option value="1">上海</option>
-                    <option value="2">广州</option>
-                    <option value="3">深圳</option>
-                    <option value="4">杭州</option>
-                    <option value="0">北京</option>
-                    <option value="1">上海</option>
-                    <option value="2">广州</option>
-                    <option value="3">深圳</option>
-                    <option value="4">杭州</option>
-                    <option value="0">北京</option>
-                    <option value="1">上海</option>
-                    <option value="2">广州</option>
-                    <option value="3">深圳</option>
-                    <option value="4">杭州</option>
-                </select>
+                <select name="pid" lay-verify="required" lay-search></select>
             </div>
         </div>
         <div class="layui-form-item">
@@ -120,6 +96,59 @@
     </form>
 </div>
 
+<div id="assign" style="width:680px;padding: 10px !important;display: none;">
+    <form class="layui-form" id="assignForm" lay-filter="assignForm">
+    <div class="layui-tab layui-tab-card">
+        <ul class="layui-tab-title">
+            {% for key,node in nodes %}
+                {% if key == 0 %}
+                <li class="layui-this">{{ node['tittle'] }}</li>
+                {% else %}
+                <li>{{ node['tittle'] }}</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        <div class="layui-tab-content">
+            {% for key,node in nodes %}
+                {% if key == 0 %}
+                <div class="layui-tab-item layui-show">
+                {% else %}
+                <div class="layui-tab-item">
+                {% endif %}
+                    {% for item in node['child'] %}
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <input type="checkbox" name="access[]" value="{{ item['id'] }}" title="{{ item['tittle'] }}" lay-filter="module">
+                        </div>
+                        <hr>
+                        {% if item['child'] is defined %}
+                        <div class="layui-inline" style="margin-left: 50px;">
+                            {% for items in item['child'] %}
+                            <input type="checkbox" name="access[]" value="{{ items['id'] }}" title="{{ items['tittle'] }}" class="module_{{ item['id'] }}">
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <hr class="layui-bg-green">
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="editSubmit">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+    </form>
+</div>
+
 <script type="text/html" id="toolbar">
-    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    {% if access['edit'] is defined %}
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    {% endif %}
+    {% if access['assign'] is defined %}
+        <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="assign">分配权限</a>
+    {% endif %}
 </script>
