@@ -225,7 +225,7 @@ class AdminRole extends BaseModel
                 1 => $rid
             ]
         ]))
-            return [20002];
+            return ['code' => 20002];
         $accessModel = new AdminAccess();
         return $accessModel->getAccess($rid);
     }
@@ -244,41 +244,6 @@ class AdminRole extends BaseModel
         if(!$this->checkChildOfRole($create['role_id']))
             return ['code' => 30004];
         $accessModel = new AdminAccess();
-        return $accessModel->addAccess($create,$role->pid);
-    }
-
-    public function addRoleAccess($create = []){
-        if($create['role_id'] == 1)
-            return ['code' => 30004];
-        $role = $this->findFirst([
-            "conditions" => "id = ?1 AND state = 1",
-            "bind" => [
-                1 => $create['role_id']
-            ]
-        ]);
-        if(!$role)
-            return ['code' => 20002];
-        if(!$this->checkChildOfRole($create['role_id']))
-            return ['code' => 30004];
-        $accessModel = new AdminAccess();
-        return $accessModel->addAccess($create,$role->pid);
-    }
-
-    public function delRoleAccess($update = []){
-        if($update['role_id'] == 1)
-            return ['code' => 30004];
-        $role = $this->findFirst([
-            "conditions" => "id = ?1 AND state = 1",
-            "bind" => [
-                1 => $update['role_id']
-            ]
-        ]);
-        if(!$role)
-            return ['code' => 20002];
-        if(!$this->checkChildOfRole($update['role_id']))
-            return ['code' => 30004];
-        $children = $this->findChildByParentId($update['role_id']);
-        $accessModel = new AdminAccess();
-        return $accessModel->delAccess($update,$children);
+        return $accessModel->saveRoleAccess($create,$role->pid);
     }
 }

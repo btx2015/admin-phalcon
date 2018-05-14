@@ -98,6 +98,7 @@
 
 <div id="assign" style="width:680px;padding: 10px !important;display: none;">
     <form class="layui-form" id="assignForm" lay-filter="assignForm">
+        <input type="hidden" name="rid">
     <div class="layui-tab layui-tab-card">
         <ul class="layui-tab-title">
             {% for key,node in nodes %}

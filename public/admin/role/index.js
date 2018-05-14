@@ -95,6 +95,27 @@ layui.use(['table','layer','laydate','form','element'], function(){
         });
     }
 
+    function getRolesAccess(rid){
+        $.post('access',{rid:rid},function(res){
+            if(res.code === 0){
+                var roleAccess = res.data;
+                var access = $("input[name='access[]']");
+                access.each(function(){
+                    for(var key in roleAccess){
+                        if($(this).val() === roleAccess[key]){
+                            $(this).prop('checked',true)
+                            delete roleAccess[key];
+                        }
+                    }
+                });
+                $("input[name='rid']").val(rid);
+                form.render('checkbox','assignForm');
+            }else{
+                layer.msg('[ ' + res.code + ' ] ' + res.msg,{time:5000});
+            }
+        },'json');
+    }
+
     var active = {
         add: function(othis){
             //示范一个公告层
@@ -181,7 +202,8 @@ layui.use(['table','layer','laydate','form','element'], function(){
             getData(filter);
             getRoles();
         }
-        ,assign: function(){
+        ,assign: function(data){
+            getRolesAccess(data.id);
             layer.open({
                 type: 1
                 ,title: '分配权限'

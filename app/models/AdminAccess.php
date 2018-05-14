@@ -39,12 +39,18 @@ class AdminAccess extends BaseModel
     }
 
     public function getAccess($rid){
-        return $this->find([
+        $result = ['code'=>0,'data'=>[]];
+        $access = $this->find([
             "conditions" => "role_id = ?1",
             "bind"       => [
                 1 => $rid
-            ]
+            ],
+            "columns"    => "node_id"
         ])->toArray();
+        if(empty($access))
+            return $result;
+        $result['data'] = array_column($access,'node_id');
+        return $result;
     }
 
     public function addAccess($create = [],$pid = 1){
@@ -106,6 +112,40 @@ class AdminAccess extends BaseModel
                         return ['code' => 40001];
                     }
                 }
+            }
+            $transaction->commit();
+            return ['code' => 0];
+        }catch(Phalcon\Mvc\Model\Transaction\Failed $e){
+            Log::writeLog('db',$e->getMessage(),0);
+        }
+    }
+
+    public function saveRoleAccess($create = []){
+        $accesses = $this->find([
+            "conditions" => "role_id = ?1",
+            "bind" => [
+                1 => $create['role_id']
+            ]
+        ]);
+        $accessCreate = [];
+        foreach($create['access'] as $v){
+            $accessCreate[] = [
+                'role_id' => $create['role_id'],
+                'node_id' => $v
+            ];
+        }
+        try{
+            $transaction = $this->manager->get();
+            $this->setTransaction($transaction);
+            foreach($accesses as $access){
+                if($access->delete() === false){
+                    $transaction->rollback();
+                    return ['code' => 40001];
+                }
+            }
+            if($this->saveRecords($accessCreate) !== true){
+                $transaction->rollback();
+                return ['code' => 40000];
             }
             $transaction->commit();
             return ['code' => 0];

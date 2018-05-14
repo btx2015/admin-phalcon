@@ -20,7 +20,7 @@ class RoleController extends \ControllerBase
 
     public function indexAction(){
         $this->assets->addJs('admin/role/index.js');
-        $this->view->setVar('access',['add'=>1,'edit'=>1,'assign'=>1,'enable'=>1,'disable'=>1,'delete'=>1]);
+        $this->view->setVar('access',['add'=>1,'edit'=>1,'access'=>1,'enable'=>1,'disable'=>1,'delete'=>1,'assign'=>1]);
         $model = new \AdminNode();
         $this->view->setVar('nodes',$model->getFormatNode());
     }
