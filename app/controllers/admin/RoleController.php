@@ -91,13 +91,23 @@ class RoleController extends \ControllerBase
         $this->returnResult($this->model->updateStateForRoles($update['roles'],3));
     }
 
-    public function assignAction(){
+    public function accessAction(){
         $condition = $this->valid->validateParams([
             "rid" => ['rid',['PresenceOf','Numericality']]
         ],$this->params);
         if(isset($condition['code']))
             $this->returnResult($condition);
         $this->returnResult($this->model->getRoleAccess($condition['rid']));
+    }
+
+    public function assignAction(){
+        $create = $this->valid->validateParams([
+            "rid"       => ['role_id',['PresenceOf','Numericality']],
+            "access"    => ['access',['PresenceOf','Access']]
+        ],$this->params);
+        if(isset($create['code']))
+            $this->returnResult($create);
+        $this->returnResult($this->model->saveRoleAccess($create));
     }
 
     public function addAccessAction(){

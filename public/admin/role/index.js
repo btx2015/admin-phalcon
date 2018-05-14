@@ -203,6 +203,52 @@ layui.use(['table','layer','laydate','form','element'], function(){
         active[method] ? active[method].call(this, othis) : '';
     });
 
+    form.on('checkbox(controller)', function(data){
+        var actions = $('.'+data.value);
+        if(data.elem.checked){
+            actions.prop('checked',true);
+        }else{
+            actions.prop('checked',false);
+        }
+        handleAssign();
+    });
+
+    form.on('checkbox(action)', function(data){
+        var action = $('.action_'+data.value);
+        var classes = action.attr('class').split(' ');
+        var pid = classes[1];
+        var controller = $('.controller_'+pid);
+        if(data.elem.checked){
+            controller.prop('checked',true);
+        }else{
+            var actions = $('.'+pid);
+            var total = 0;
+            actions.each(function(){
+                if($(this).prop('checked') === true){
+                    total ++;
+                    return false;
+                }
+            });
+            if(total === 0){
+                controller.prop('checked',false);
+            }
+        }
+        handleAssign();
+    });
+
+    function handleAssign(){
+        $(".module").prop('checked',false);
+        var controllers = $("input[class^='controller_']");
+        controllers.each(function(){
+            if($(this).prop('checked') === true){
+                var classes = $(this).prop('class').split(' ');
+                var pid = classes[1];
+                $('.module_'+pid).prop('checked',true);
+            }
+        });
+        form.render('checkbox','assignForm');
+    }
+
     form.verify({
         name: function(value, item){ //value：表单的值、item：表单的DOM对象
             if(!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)){
@@ -224,20 +270,6 @@ layui.use(['table','layer','laydate','form','element'], function(){
         ]
     });
 
-    form.on('checkbox(module)', function(data){
-        var child = $('.module_'+data.value);
-        if(data.elem.checked){
-            child.each(function(){
-                $(this).prop('checked',true);
-            });
-        }else{
-            child.each(function(){
-                $(this).prop('checked',false);
-            });
-        }
-        form.render('checkbox','assignForm');
-    });
-
     form.on('submit(addSubmit)', function(data){
         layer.confirm('确认增加吗', {icon: 3, title:'提示'}, function(index){
             layer.close(index);
@@ -250,6 +282,14 @@ layui.use(['table','layer','laydate','form','element'], function(){
         layer.confirm('确认修改吗', {icon: 3, title:'提示'}, function(index){
             layer.close(index);
             request('edit',data.field,'编辑成功');
+        });
+        return false;
+    });
+
+    form.on('submit(assignSubmit)',function(data){
+        layer.confirm('确认分配权限吗', {icon: 3, title:'提示'}, function(index){
+            layer.close(index);
+            request('assign',data.field,'分配成功');
         });
         return false;
     });

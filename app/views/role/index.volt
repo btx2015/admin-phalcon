@@ -110,6 +110,9 @@
         </ul>
         <div class="layui-tab-content">
             {% for key,node in nodes %}
+            <div style="display: none;">
+                <input type="checkbox" name="access[]" value="{{ node['id'] }}" class="module_{{ node['id'] }} module">
+            </div>
                 {% if key == 0 %}
                 <div class="layui-tab-item layui-show">
                 {% else %}
@@ -118,13 +121,13 @@
                     {% for item in node['child'] %}
                     <div class="layui-form-item">
                         <div class="layui-inline">
-                            <input type="checkbox" name="access[]" value="{{ item['id'] }}" title="{{ item['tittle'] }}" lay-filter="module">
+                            <input type="checkbox" name="access[]" value="{{ item['id'] }}" title="{{ item['tittle'] }}" lay-filter="controller" class="controller_{{ item['id'] }} {{ node['id'] }}">
                         </div>
                         <hr>
                         {% if item['child'] is defined %}
                         <div class="layui-inline" style="margin-left: 50px;">
                             {% for items in item['child'] %}
-                            <input type="checkbox" name="access[]" value="{{ items['id'] }}" title="{{ items['tittle'] }}" class="module_{{ item['id'] }}">
+                            <input type="checkbox" name="access[]" value="{{ items['id'] }}" title="{{ items['tittle'] }}" lay-filter="action" class="action_{{ items['id'] }} {{ item['id'] }}">
                             {% endfor %}
                         </div>
                         {% endif %}
@@ -135,12 +138,14 @@
             {% endfor %}
         </div>
     </div>
-    <div class="layui-form-item">
-        <div class="layui-input-block">
-            <button class="layui-btn" lay-submit lay-filter="editSubmit">立即提交</button>
-            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-        </div>
-    </div>
+        {% if access['assign'] is defined %}
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="assignSubmit">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        {% endif %}
     </form>
 </div>
 
@@ -148,7 +153,7 @@
     {% if access['edit'] is defined %}
         <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     {% endif %}
-    {% if access['assign'] is defined %}
+    {% if access['access'] is defined %}
         <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="assign">分配权限</a>
     {% endif %}
 </script>

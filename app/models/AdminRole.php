@@ -230,6 +230,23 @@ class AdminRole extends BaseModel
         return $accessModel->getAccess($rid);
     }
 
+    public function saveRoleAccess($create = []){
+        if($create['role_id'] == 1)
+            return ['code' => 30004];
+        $role = $this->findFirst([
+            "conditions" => "id = ?1 AND state = 1",
+            "bind" => [
+                1 => $create['role_id']
+            ]
+        ]);
+        if(!$role)
+            return ['code' => 20002];
+        if(!$this->checkChildOfRole($create['role_id']))
+            return ['code' => 30004];
+        $accessModel = new AdminAccess();
+        return $accessModel->addAccess($create,$role->pid);
+    }
+
     public function addRoleAccess($create = []){
         if($create['role_id'] == 1)
             return ['code' => 30004];
