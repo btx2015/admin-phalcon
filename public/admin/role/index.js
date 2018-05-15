@@ -144,17 +144,12 @@ layui.use(['table','layer','laydate','form','element'], function(){
                 ,btnAlign: 'c' //按钮居中
                 ,shade: 0 //不显示遮罩
                 ,success: function(layero){
-                    for(var key in data){
-                        var field = $("#editForm :input[name='"+key+"']");
-                        if(field.length > 0){
-                            field.val(data[key]);
-                            form.render();
-                        }
-                    }
+                    form.val("editForm", data);
                 }
                 ,cancel: function(index, layero){
                     $('#edit').hide();
                     layer.close(index)
+                    form.val("editForm", {});
                 }
             });
         }
@@ -214,7 +209,9 @@ layui.use(['table','layer','laydate','form','element'], function(){
                 ,shade: 0 //不显示遮罩
                 ,cancel: function(index, layero){
                     $('#assign').hide();
-                    layer.close(index)
+                    layer.close(index);
+                    $("input[name^='access']").prop('checked',false);
+                    form.render('checkbox','assignForm');
                 }
             });
         }

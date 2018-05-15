@@ -73,7 +73,7 @@
 </div>
 
 <div id="edit" style="width:490px;padding-top: 20px !important;display: none;">
-    <form class="layui-form" id="editForm">
+    <form class="layui-form" id="editForm" lay-filter="editForm">
         <div class="layui-form-item">
             <input type="hidden" name="id">
             <label class="layui-form-label">角色父级</label>
@@ -103,9 +103,9 @@
         <ul class="layui-tab-title">
             {% for key,node in nodes %}
                 {% if key == 0 %}
-                <li class="layui-this">{{ node['tittle'] }}</li>
+                <li class="layui-this">{{ node['title'] }}</li>
                 {% else %}
-                <li>{{ node['tittle'] }}</li>
+                <li>{{ node['title'] }}</li>
                 {% endif %}
             {% endfor %}
         </ul>
@@ -122,13 +122,13 @@
                     {% for item in node['child'] %}
                     <div class="layui-form-item">
                         <div class="layui-inline">
-                            <input type="checkbox" name="access[]" value="{{ item['id'] }}" title="{{ item['tittle'] }}" lay-filter="controller" class="controller_{{ item['id'] }} {{ node['id'] }}">
+                            <input type="checkbox" name="access[]" value="{{ item['id'] }}" title="{{ item['title'] }}" lay-filter="controller" class="controller_{{ item['id'] }} {{ node['id'] }}">
                         </div>
                         <hr>
                         {% if item['child'] is defined %}
                         <div class="layui-inline" style="margin-left: 50px;">
                             {% for items in item['child'] %}
-                            <input type="checkbox" name="access[]" value="{{ items['id'] }}" title="{{ items['tittle'] }}" lay-filter="action" class="action_{{ items['id'] }} {{ item['id'] }}">
+                            <input type="checkbox" name="access[]" value="{{ items['id'] }}" title="{{ items['title'] }}" lay-filter="action" class="action_{{ items['id'] }} {{ item['id'] }}">
                             {% endfor %}
                         </div>
                         {% endif %}

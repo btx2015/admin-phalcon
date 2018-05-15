@@ -4,57 +4,6 @@ class AdminRole extends BaseModel
 {
 
     /**
-     *
-     * @var integer
-     * @Primary
-     * @Identity
-     * @Column(column="id", type="integer", length=11, nullable=false)
-     */
-    public $id;
-
-    /**
-     *
-     * @var string
-     * @Column(column="name", type="string", length=30, nullable=false)
-     */
-    public $name;
-
-    /**
-     *
-     * @var integer
-     * @Column(column="pid", type="integer", length=11, nullable=false)
-     */
-    public $pid;
-
-    /**
-     *
-     * @var integer
-     * @Column(column="state", type="integer", length=1, nullable=false)
-     */
-    public $state;
-
-    /**
-     *
-     * @var integer
-     * @Column(column="created_at", type="integer", length=11, nullable=false)
-     */
-    public $created_at;
-
-    /**
-     *
-     * @var string
-     * @Column(column="updated_at", type="string", nullable=false)
-     */
-    public $updated_at;
-
-    /**
-     *
-     * @var integer
-     * @Column(column="updated_admin_id", type="integer", length=11, nullable=false)
-     */
-    public $updated_admin_id;
-
-    /**
      * Initialize method for model.
      */
     public function initialize()
@@ -78,23 +27,20 @@ class AdminRole extends BaseModel
         if($_SESSION['rid'] != 1){
             $children = $this->findChildByParentId($_SESSION['rid']);
             if(empty($children))
-                return ['code'=>0,'data'=>[],'total'=>0];
+                return ['data'=>[],'count'=>0];
             $conditions['id'] = array_unshift($children,$_SESSION['rid']);
         }
-        return [
-            'code' => 0,
-            'data' =>  $this->getRecordsByCondition($conditions,['id','name'],-1)
-        ];
+        return ['data' => $this->getRecordsByCondition($conditions,['id','name'],-1)];
     }
 
     public function getRoleRecords($conditions = []){
         if($_SESSION['rid'] != 1){
             $children = $this->findChildByParentId($_SESSION['rid']);
             if(empty($children))
-                return ['code'=>0,'data'=>[],'total'=>0];
+                return ['data'=>[],'count'=>0];
             $conditions['id'] = $children;
             if(isset($conditions['pid']) && !in_array($conditions['pid'],$children))
-                return ['code'=>0,'data'=>[],'total'=>0];
+                return ['data'=>[],'count'=>0];
         }else{
             $conditions['id!='] = 1;
         }
@@ -109,7 +55,6 @@ class AdminRole extends BaseModel
                 'created_at' => 'time']);
         }
         return [
-            'code' => 0,
             'data' => $data,
             'count' => $total,
         ];
@@ -130,7 +75,7 @@ class AdminRole extends BaseModel
         if(!$this->create($create)){
             return ['code'=>30000];//Create fail
         }
-        return ['code'=>0];
+        return [];
     }
 
     public function updateRoleRecords($update = []){
@@ -151,7 +96,7 @@ class AdminRole extends BaseModel
 
         if($user->update($update) !== true)
             return ['code'=>20003];//Failed
-        return ['code'=>0];
+        return [];
     }
 
     public function updateStateForRoles($roles = [] ,$state = 1){
@@ -175,7 +120,7 @@ class AdminRole extends BaseModel
         }
         if($this->saveRecords($rolesData,['id','state'],true) !== true)
             return ['code' => 30005];
-        return ['code' => 0];
+        return [];
     }
 
     /**
@@ -214,6 +159,18 @@ class AdminRole extends BaseModel
             }
         }
         return $result;
+    }
+
+    public function getRoleNode($rid,$field){
+        if($rid != 1 && !$this->findFirst([
+            "conditions" => "id = ?1 AND state = 1",
+            "bind" => [
+                1 => $rid
+            ]
+        ]))
+            return ['code' => 20002];
+        $accessModel = new AdminAccess();
+        return $accessModel->getNode($rid,$field);
     }
 
     public function getRoleAccess($rid){

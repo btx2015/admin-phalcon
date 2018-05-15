@@ -23,7 +23,7 @@ class ControllerBase extends Controller
         $menu = $this->getMenuData();
         $this->view->setVar('menu',$menu);
 
-        $this->assets();
+        $this->initAssets();
         $_SESSION['rid'] = 1;
     }
 
@@ -43,6 +43,7 @@ class ControllerBase extends Controller
                 exit('method error!');
             $this->params = $this->request->getQuery();
         }
+        $this->ip = $_SERVER['REMOTE_ADDR'];
     }
 
     protected function checkAuth(){
@@ -58,16 +59,15 @@ class ControllerBase extends Controller
         return true;
     }
 
-    protected function returnResult($result = ['code'=>0]){
-        if($result['code']){
+    protected function returnResult($result = []){
+        if(isset($result['code']) && $result['code'] != 0){
             if(!isset($result['msg']) || !$result['msg']){
                 $config = new \Phalcon\Config\Adapter\Php("../app/config/errMsg.php");
                 if($config && isset($config->toArray()[$result['code']]))
                     $result['msg'] = $config->toArray()[$result['code']];
             }
         }else{
-            if(!isset($result['msg']) || !$result['msg'])
-                $result['msg'] = 'success';
+            $result = array_merge(['code'=>0,'msg'=>'success'],$result);
         }
         echo json_encode($result);
         exit();
@@ -144,7 +144,7 @@ class ControllerBase extends Controller
         return $menu;
     }
 
-    private function assets(){
+    private function initAssets(){
 
         $this->assets->addCss("layui/css/layui.css");
         $this->assets->addJs("layui/layui.js");

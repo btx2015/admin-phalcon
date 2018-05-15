@@ -4,22 +4,6 @@ class AdminAccess extends BaseModel
 {
 
     /**
-     *
-     * @var integer
-     * @Primary
-     * @Column(column="role_id", type="integer", length=11, nullable=false)
-     */
-    public $role_id;
-
-    /**
-     *
-     * @var integer
-     * @Primary
-     * @Column(column="node_id", type="integer", length=11, nullable=false)
-     */
-    public $node_id;
-
-    /**
      * Initialize method for model.
      */
     public function initialize()
@@ -39,7 +23,6 @@ class AdminAccess extends BaseModel
     }
 
     public function getAccess($rid){
-        $result = ['code'=>0,'data'=>[]];
         $access = $this->find([
             "conditions" => "role_id = ?1",
             "bind"       => [
@@ -48,9 +31,18 @@ class AdminAccess extends BaseModel
             "columns"    => "node_id"
         ])->toArray();
         if(empty($access))
-            return $result;
-        $result['data'] = array_column($access,'node_id');
-        return $result;
+            return ['data'=>[]];
+        return ['data' => array_column($access,'node_id')];
+    }
+
+    public function getNode($rid,$field){
+        if($rid != 1){
+            $nodeId = $this->getAccess($rid)['data'];
+        }else{
+            $nodeId = 'all';
+        }
+        $nodeModel = new \AdminNode();
+        return $nodeModel->getFormatNode($nodeId,$field);
     }
 
     public function addAccess($create = [],$pid = 1){
@@ -84,7 +76,7 @@ class AdminAccess extends BaseModel
             return ['code' => 40002];
         if($this->saveRecords($data) !== true)
             return ['code' => 40000];
-        return ['code' => 0];
+        return [];
     }
 
     public function delAccess($update = [],$children = []){
@@ -114,7 +106,7 @@ class AdminAccess extends BaseModel
                 }
             }
             $transaction->commit();
-            return ['code' => 0];
+            return [];
         }catch(Phalcon\Mvc\Model\Transaction\Failed $e){
             Log::writeLog('db',$e->getMessage(),0);
         }
@@ -148,7 +140,7 @@ class AdminAccess extends BaseModel
                 return ['code' => 40000];
             }
             $transaction->commit();
-            return ['code' => 0];
+            return [];
         }catch(Phalcon\Mvc\Model\Transaction\Failed $e){
             Log::writeLog('db',$e->getMessage(),0);
         }

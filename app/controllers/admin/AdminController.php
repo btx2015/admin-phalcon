@@ -18,7 +18,14 @@ class AdminController extends \ControllerBase
     }
 
     public function loginAction(){
-
+        $login = $this->valid->validateParams([
+            "usa"  => ['username',['PresenceOf']],
+            "pwd"  => ['password',['PresenceOf']],
+        ],$this->params);
+        if(isset($login['code']))
+            $this->returnResult($login);
+        $login['ip'] = $this->ip;
+        $this->returnResult($this->model->userLogin($login));
     }
 
     public function indexAction(){
