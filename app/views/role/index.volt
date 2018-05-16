@@ -1,7 +1,6 @@
 <div class="layui-fluid">
     <div class="layui-row">
         <div class="layui-card">
-            <div class="layui-card-header">角色管理</div>
             <div class="layui-card-body">
                 <div class="layui-form-item">
                     <div class="layui-inline layui-col-md12" id="actions">

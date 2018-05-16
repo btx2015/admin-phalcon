@@ -11,19 +11,9 @@
         .layui-fluid {padding: 15px;}
     </style>
 </head>
-<body class="layui-layout-body">
-    <div class="layui-layout layui-layout-admin">
+<body class="layui-layout-body" style="height:100%;">
+    {{ content() }}
 
-        {% include('header') %}
-
-        {% include('sidebar') %}
-
-        <div class="layui-body" style="background-color: #eee;">
-            {{ content() }}
-        </div>
-
-        {% include('footer') %}
-    </div>
-{{ assets.outputJs()}}
+    {{ assets.outputJs()}}
 </body>
 </html>
