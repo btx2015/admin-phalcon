@@ -19,9 +19,7 @@ class RoleController extends \ControllerBase
     }
 
     public function indexAction(){
-        $this->assets->addJs('admin/role/index.js');
-        $accessModel = new \AdminAccess();
-        $_SESSION['access'] = $accessModel->getNode(1,'name');
+        $this->assets->addJs('admin/role.js');
         $this->view->setVar('access',$_SESSION['access']['admin']['role']);
         $this->view->setVar('nodes',$this->model->getRoleNode(1,'title'));
     }

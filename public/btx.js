@@ -28,7 +28,7 @@ layui.use('element', function(){
     });
 
     function FrameWH() {
-        var h = $(window).height() - 180;
+        var h = $(window).height();
         $("iframe").css("height",h+"px");
     }
 

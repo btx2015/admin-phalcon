@@ -161,6 +161,12 @@ class AdminRole extends BaseModel
         return $result;
     }
 
+    /**
+     * 获取角色权限
+     * @param $rid
+     * @param $field
+     * @return array
+     */
     public function getRoleNode($rid,$field){
         if($rid != 1 && !$this->findFirst([
             "conditions" => "id = ?1 AND state = 1",

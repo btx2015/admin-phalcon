@@ -21,7 +21,12 @@ class AdminNode extends BaseModel
         return 'admin_node';
     }
 
-
+    /**
+     * 获取格式化后的权限数据
+     * @param $nodeId
+     * @param string $field
+     * @return mixed
+     */
     public function getFormatNode($nodeId,$field = 'name'){
         if($nodeId === 'all'){
             $nodes = $this->find([

@@ -56,6 +56,18 @@ class ControllerBase extends Controller
     }
 
     protected function checkAccess(){
+        $accessModel = new \AdminAccess();
+        if(!isset($_SESSION['access'])){
+            $_SESSION['access'] = $accessModel->getNode(1,'name');
+        }
+        //$this->dump($_SESSION['access']);
+        if($this->uri !== '/admin/index/index'){
+            $route = explode('/',$this->uri);
+            if(!isset($_SESSION['access'][$route[1]][$route[2]][$route[3]])){
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -149,5 +161,30 @@ class ControllerBase extends Controller
         $this->assets->addCss("layui/css/layui.css");
         $this->assets->addJs("layui/layui.js");
         $this->assets->addJs("btx.js");
+    }
+
+    public function dump($var, $echo=true, $label=null, $strict=true) {
+        $label = ($label === null) ? '' : rtrim($label) . ' ';
+        if (!$strict) {
+            if (ini_get('html_errors')) {
+                $output = print_r($var, true);
+                $output = '<pre>' . $label . htmlspecialchars($output, ENT_QUOTES) . '</pre>';
+            } else {
+                $output = $label . print_r($var, true);
+            }
+        } else {
+            ob_start();
+            var_dump($var);
+            $output = ob_get_clean();
+            if (!extension_loaded('xdebug')) {
+                $output = preg_replace('/\]\=\>\n(\s+)/m', '] => ', $output);
+                $output = '<pre>' . $label . htmlspecialchars($output, ENT_QUOTES) . '</pre>';
+            }
+        }
+        if ($echo) {
+            echo($output);
+            return null;
+        }else
+            return $output;
     }
 }

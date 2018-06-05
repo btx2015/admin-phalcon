@@ -29,7 +29,8 @@ class AdminController extends \ControllerBase
     }
 
     public function indexAction(){
-
+        $this->assets->addJs('admin/admin.js');
+        $this->view->setVar('access',$_SESSION['access']['admin']['admin']);
     }
 
     public function addAction(){

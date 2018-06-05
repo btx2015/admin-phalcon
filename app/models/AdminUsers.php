@@ -81,10 +81,19 @@ class AdminUsers extends BaseModel
         }
         list($data,$total) = $this->getRecords($conditions,
             ['id','username','phone','email','state','true_name','role_id','created_at']);
+        if($data){
+            $ridData = array_unique(array_column($data,'role_id'));
+            $roleModel = new AdminRole();
+            $roles = $roleModel->getRecordsByCondition(['id'=>$ridData],['id','name'],-1);
+            $data = $this->translateRecords($data,[
+                'role_id' => ['data' => $roles,'source' => 'id','target' => 'name'],
+                'state' => 'state',
+                'created_at' => 'time']);
+        }
         return [
             'code' => 0,
             'data' => $data,
-            'total' => $total,
+            'count' => $total,
         ];
     }
 
