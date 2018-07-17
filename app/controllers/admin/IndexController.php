@@ -12,12 +12,77 @@ class IndexController extends \ControllerBase
 
     public function indexAction()
     {
-//        die("123");
+        $menu = $this->getMenuData();
+        $this->view->setVar('menu',$menu);
+        $this->view->setVar('access',$_SESSION['access']['role']);
     }
 
     public function testAction(){
         $this->returnResult(['code'=>0,'data'=>123]);
     }
 
+    public function getMenuData(){
+        $menuData = [
+            ["name" => " 首  页 " ,"icon" => "&#xe68e;"  ,"controller" => "index" ,"action" => "index" ],
+            ["name" => "系统管理" ,"icon" => "&#xe620;",
+                "child" => [
+                    ["name" => "角色管理" ,"icon" => "icon-group" ,"controller" => "role"   ,"action" => "index" ],
+                    ["name" => "管 理 员" ,"icon" => "icon-user"  ,"controller" => "admin"  ,"action" => "index" ],
+                    ["name" => "系统设置" ,"icon" => "icon-cogs"  ,"controller" => "config" ,"action" => "index" ],
+                ]
+            ],
+        ];
+        $menu = [];
+        $access = $_SESSION['access'];
+        foreach($menuData as &$v){
+            $active = false;
+            if(isset($v['child'])){
+                $child = [];
+                foreach($v['child'] as &$a){
+                    if(!isset($access['admin'][$a['controller']][$a['action']])){
+                        unset($a);
+                        continue;
+                    }
+                    $children = [
+                        "tittle" => $a['name'],
+                        "icon" => $a['icon'],
+                        "href" => "/admin/".$a['controller']."/".$a['action'],
+                    ];
+                    if($this->uri === $children['href']){
+                        $children['active'] = 'active';
+                        $active = true;
+                    }
+
+                    $child[] = $children;
+                }
+                if(empty($child)){
+                    unset($v);
+                    continue;
+                }
+                $menus = [
+                    "tittle" => $v['name'],
+                    "icon" => $v['icon'],
+                    "child" => $child,
+                ];
+                if($active)
+                    $menus['active'] = 'active';
+                $menu[] = $menus;
+            }else{
+                if(!isset($access['admin'][$v['controller']][$v['action']]))
+                    continue;
+
+                $menus = [
+                    "tittle" => $v['name'],
+                    "icon" => $v['icon'],
+                    "href" => "/admin/".$v['controller']."/".$v['action'],
+                ];
+                if($this->uri === $menus['href'])
+                    $menus['active'] = 'active';
+                $menu[] = $menus;
+            }
+        }
+
+        return $menu;
+    }
 }
 

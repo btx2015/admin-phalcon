@@ -13,22 +13,24 @@ class ControllerBase extends Controller
     protected $accessConfig;
     protected $valid;
 
+    /**
+     * 获取配置
+     * 权限验证
+     * 参数处理
+     * 加载资源
+     */
     protected function onConstruct(){
+        $_SESSION['rid'] = 1;
         $this->config = require "../app/config/config.php";
         $this->request = new request();
-        $this->initParams();
+        $this->uri = $this->request->get('_url');
         $this->checkAuth();
-        $this->valid = new Validators();
-
-        $menu = $this->getMenuData();
-        $this->view->setVar('menu',$menu);
-
+        $this->initParams();
         $this->initAssets();
-        $_SESSION['rid'] = 1;
+        $this->valid = new Validators();
     }
 
     protected function initParams(){
-        $this->uri = $this->request->get('_url');
         $access = $this->config->access->toArray();
         $accessDefault = $access['default'];
         $accessUri = $access[$this->uri] ?? [];
@@ -57,10 +59,10 @@ class ControllerBase extends Controller
 
     protected function checkAccess(){
         $accessModel = new \AdminAccess();
-        if(!isset($_SESSION['access'])){
-            $_SESSION['access'] = $accessModel->getNode(1,'name');
+        if(!isset($_SESSION['rid']) || !isset($_SESSION['access'])){
+            //TODO 跳转登录 同时验证uid rid
+            $_SESSION['access'] = $accessModel->getNode($_SESSION['rid'],'name');
         }
-        //$this->dump($_SESSION['access']);
         if($this->uri !== '/admin/index/index'){
             $route = explode('/',$this->uri);
             if(!isset($_SESSION['access'][$route[1]][$route[2]][$route[3]])){
@@ -83,77 +85,6 @@ class ControllerBase extends Controller
         }
         echo json_encode($result);
         exit();
-    }
-
-    public function getMenuData(){
-        $menuData = [
-            ["name" => " 首  页 " ,"icon" => "&#xe68e;"  ,"controller" => "index" ,"action" => "index" ],
-            ["name" => "系统管理" ,"icon" => "&#xe620;",
-                "child" => [
-                    ["name" => "角色管理" ,"icon" => "icon-group" ,"controller" => "role"   ,"action" => "index" ],
-                    ["name" => "管 理 员" ,"icon" => "icon-user"  ,"controller" => "admin"  ,"action" => "index" ],
-                    ["name" => "系统设置" ,"icon" => "icon-cogs"  ,"controller" => "config" ,"action" => "index" ],
-                ]
-            ],
-        ];
-        $menu = [];
-        $access = [
-            'admin' => [
-                'index'=> ['index' => 1],
-                'role' => ['index' => 1],
-                'admin' => ['index' => 1],
-                'config' => ['index' => 1],
-            ]
-        ];
-        foreach($menuData as &$v){
-            $active = false;
-            if(isset($v['child'])){
-                $child = [];
-                foreach($v['child'] as &$a){
-                    if(!isset($access['admin'][$a['controller']][$a['action']])){
-                        unset($a);
-                        continue;
-                    }
-                    $children = [
-                        "tittle" => $a['name'],
-                        "icon" => $a['icon'],
-                        "href" => "/admin/".$a['controller']."/".$a['action'],
-                    ];
-                    if($this->uri === $children['href']){
-                        $children['active'] = 'active';
-                        $active = true;
-                    }
-
-                    $child[] = $children;
-                }
-                if(empty($child)){
-                    unset($v);
-                    continue;
-                }
-                $menus = [
-                    "tittle" => $v['name'],
-                    "icon" => $v['icon'],
-                    "child" => $child,
-                ];
-                if($active)
-                    $menus['active'] = 'active';
-                $menu[] = $menus;
-            }else{
-                if(!isset($access['admin'][$v['controller']][$v['action']]))
-                    continue;
-
-                $menus = [
-                    "tittle" => $v['name'],
-                    "icon" => $v['icon'],
-                    "href" => "/admin/".$v['controller']."/".$v['action'],
-                ];
-                if($this->uri === $menus['href'])
-                    $menus['active'] = 'active';
-                $menu[] = $menus;
-            }
-        }
-
-        return $menu;
     }
 
     private function initAssets(){

@@ -138,7 +138,7 @@
             {% endfor %}
         </div>
     </div>
-        {% if access['assign'] is defined %}
+        {% if access['assignAccess'] is defined %}
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn" lay-submit lay-filter="assignSubmit">立即提交</button>
@@ -153,7 +153,7 @@
     {% if access['edit'] is defined %}
         <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     {% endif %}
-    {% if access['access'] is defined %}
+    {% if access['assign'] is defined %}
         <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="assign">分配权限</a>
     {% endif %}
 </script>
